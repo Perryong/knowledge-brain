@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/perry/.claude/plugins/cache/mattpocock/mattpocock-skills/1.2.0/skills/engineering/grill-with-docs/**)"
+    ]
+  }
+}
