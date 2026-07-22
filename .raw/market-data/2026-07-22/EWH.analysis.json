@@ -1,0 +1,19 @@
+{
+  "label": "EWH",
+  "symbol": "EWH",
+  "asof": "2026-07-22",
+  "close": 22.5,
+  "pct_1d": 0.9,
+  "pct_5d": 1.9,
+  "pct_1m": 5.49,
+  "pct_ytd": 2.88,
+  "sma20": 21.477,
+  "sma50": 22.2642,
+  "sma200": 22.5296,
+  "above_sma200": false,
+  "rsi14": 78.8,
+  "atr14": 0.2646,
+  "high_52w": 24.55,
+  "low_52w": 20.33,
+  "cross": "death"
+}
