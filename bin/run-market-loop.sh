@@ -27,6 +27,16 @@ if [ -d .git ]; then
         commit -q -m "market: auto-commit $(date '+%F %H:%M')"
     echo "[$(date '+%F %T')] committed $(git rev-parse --short HEAD)"
   fi
+  # Push any unpushed commits. Non-fatal: a network/credential failure must not
+  # break the local commit (osxkeychain + gh supply creds in a real shell; cron
+  # has network, the Claude sandbox does not). First push must be done by hand.
+  if git remote get-url origin >/dev/null 2>&1; then
+    if git push -q origin main; then
+      echo "[$(date '+%F %T')] pushed to origin/main"
+    else
+      echo "[$(date '+%F %T')] push failed (non-fatal) — will retry next run"
+    fi
+  fi
 else
   echo "[$(date '+%F %T')] no .git — skipped commit"
 fi
