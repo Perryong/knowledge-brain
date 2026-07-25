@@ -1,29 +1,11 @@
 ---
-type: meta
-title: "Operation Log"
-updated: 2026-04-08
-tags:
-  - meta
-  - log
-status: evergreen
-related:
-  - "[[index]]"
-  - "[[hot]]"
-  - "[[overview]]"
-  - "[[sources/_index]]"
----
 
-# Operation Log
+## [2026-07-22] market | Market snapshot
 
-Navigation: [[index]] | [[hot]] | [[overview]]
-
-Append-only. New entries go at the TOP. Never edit past entries.
-
-Entry format: `## [YYYY-MM-DD] operation | Title`
-
-Parse recent entries: `grep "^## \[" wiki/log.md | head -10`
-
----
+- Type: market-data
+- Location: wiki/sources/market-data/2026-07-22.md
+- Instruments: BTCUSD, EWH, MSFT, NVDA, SPY, XAUUSD
+- Source: Twelve Data (daily bars)
 
 ## [2026-04-24] save | v1.6.0 public release notes (Teams, Karpathy-style)
 - Type: release doc + visual assets
