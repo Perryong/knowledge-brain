@@ -8,19 +8,19 @@ tags:
   - market
   - crypto
 status: evergreen
-updated: 2026-07-22
+updated: 2026-07-25
 related:
-  - "[[Market snapshot 2026-07-22]]"
+  - "[[Market snapshot 2026-07-25]]"
 ---
 
 # Bitcoin (BTC/USD)
 
 Twelve Data symbol: `BTC/USD`. Region: Global. Class: crypto.
 
-## Latest reading (2026-07-22)
-- **Close** 66054.37 (-0.75% 1d, +3.32% 5d, -25.65% YTD)
-- **Trend** below SMA200 · death cross (SMA50 63136.9314 / SMA200 72730.7449)
-- **RSI(14)** 67.0 · **ATR(14)** 1564.0129
+## Latest reading (2026-07-25)
+- **Close** 64038.0 (-0.16% 1d, -1.87% 5d, -27.92% YTD)
+- **Trend** below SMA200 · death cross (SMA50 63221.9688 / SMA200 72301.7432)
+- **RSI(14)** 51.01 · **ATR(14)** 1539.5714
 - **52w** 58624.71 – 96951.78
 
 ## History
@@ -28,4 +28,5 @@ Twelve Data symbol: `BTC/USD`. Region: Global. Class: crypto.
 | Date | Close | 1d% | RSI | Trend | Cross |
 |---|---|---|---|---|---|
 | 2026-07-22 | 66054.37 | -0.75% | 67.0 | <SMA200 | death |
+| 2026-07-25 | 64038.0 | -0.16% | 51.01 | <SMA200 | death |
 <!-- history:end -->

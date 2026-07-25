@@ -1,5 +1,13 @@
 ---
 
+## [2026-07-25] market | Market snapshot
+
+- Type: market-data
+- Location: wiki/sources/market-data/2026-07-25.md
+- Instruments: BTCUSD, EWH, MSFT, NVDA, SPY, XAUUSD
+- Source: Twelve Data (daily bars)
+
+
 ## [2026-07-22] market | Market snapshot
 
 - Type: market-data
