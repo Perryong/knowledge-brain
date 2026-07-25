@@ -70,6 +70,8 @@ Demo Images.canvas
 
 # Daily notes created by Calendar plugin
 ????-??-??.md
+# but DO track market-loop daily snapshots (same date-name shape, real deliverable)
+!wiki/sources/market-data/????-??-??.md
 
 # Video and large media files
 *.mkv
