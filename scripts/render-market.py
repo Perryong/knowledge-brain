@@ -64,6 +64,8 @@ related:
 
 Instruments: {links}
 
+Narrative: [[Market Drivers {day}]] (filed by the autoresearch step; may not exist yet)
+
 See also: [[_index|Entities]] · [[log]]
 """
 

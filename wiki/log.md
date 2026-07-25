@@ -7,7 +7,6 @@
 - Instruments: BTCUSD, EWH, MSFT, NVDA, SPY, XAUUSD
 - Source: Twelve Data (daily bars)
 
-
 ## [2026-07-22] market | Market snapshot
 
 - Type: market-data
