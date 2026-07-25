@@ -3,7 +3,7 @@
   "symbol": "BTC/USD",
   "exchange": "Binance",
   "currency": null,
-  "fetched_at": "2026-07-25T01:32:38Z",
+  "fetched_at": "2026-07-25T03:35:42Z",
   "bars": [
     {
       "datetime": "2025-11-18",
@@ -1753,7 +1753,7 @@
       "open": 64140.0,
       "high": 64179.03,
       "low": 64006.55,
-      "close": 64038.0
+      "close": 64104.0
     }
   ]
 }

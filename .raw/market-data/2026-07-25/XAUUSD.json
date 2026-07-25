@@ -3,7 +3,7 @@
   "symbol": "XAU/USD",
   "exchange": null,
   "currency": null,
-  "fetched_at": "2026-07-25T01:32:35Z",
+  "fetched_at": "2026-07-25T03:35:39Z",
   "bars": [
     {
       "datetime": "2025-11-18",
@@ -1753,7 +1753,7 @@
       "open": 4053.37645,
       "high": 4056.11207,
       "low": 4053.34198,
-      "close": 4055.90142
+      "close": 4056.0204
     }
   ]
 }

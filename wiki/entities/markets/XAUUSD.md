@@ -18,9 +18,9 @@ related:
 Twelve Data symbol: `XAU/USD`. Region: Global. Class: commodity.
 
 ## Latest reading (2026-07-25)
-- **Close** 4055.90142 (+0.06% 1d, +1.19% 5d, -6.01% YTD)
-- **Trend** below SMA200 · death cross (SMA50 4127.2768 / SMA200 4615.8681)
-- **RSI(14)** 44.56 · **ATR(14)** 62.0498
+- **Close** 4056.0204 (+0.06% 1d, +1.19% 5d, -6.01% YTD)
+- **Trend** below SMA200 · death cross (SMA50 4127.2792 / SMA200 4615.8687)
+- **RSI(14)** 44.57 · **ATR(14)** 62.0498
 - **52w** 3976.7828 – 5330.9485
 
 ## History
@@ -28,5 +28,5 @@ Twelve Data symbol: `XAU/USD`. Region: Global. Class: commodity.
 | Date | Close | 1d% | RSI | Trend | Cross |
 |---|---|---|---|---|---|
 | 2026-07-22 | 4158.00346 | +1.97% | 57.91 | <SMA200 | death |
-| 2026-07-25 | 4055.90142 | +0.06% | 44.56 | <SMA200 | death |
+| 2026-07-25 | 4056.0204 | +0.06% | 44.57 | <SMA200 | death |
 <!-- history:end -->
