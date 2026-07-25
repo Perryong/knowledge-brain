@@ -1,5 +1,32 @@
 # plan.md — Automated Markets Research Loop on claude-obsidian
 
+## BUILD STATUS (2026-07-25) — shipped
+
+| Phase | State | Artifact |
+|---|---|---|
+| 0 unblock | ✅ | `git init`; Twelve Data key in `~/.config/market-loop.env` (600, off-repo) |
+| 1 fetch | ✅ | `scripts/fetch-market.py` — 6 symbols, 250 bars, stdlib, self-check |
+| 2 analyze | ✅ | `scripts/analyze-market.py` — SMA/RSI/ATR/cross, known-answer self-check |
+| 3 render | ✅ | `scripts/render-market.py` — daily snapshot + entity pages + log, idempotent |
+| orchestrator | ✅ | `bin/run-market-loop.sh` — fetch→analyze→render→commit (D2 script-driven) |
+| 5 schedule | ✅ | cron `30 6 * * 2-6` (06:30 SGT Tue–Sat); logs to `.vault-meta/market-loop.log` |
+| 4 narrative | ✅ interactive | `/autoresearch`-style, filed to `wiki/concepts/Market Drivers <day>.md`; run by hand (LLM step, not in cron) |
+
+**Decisions locked:** China = Hang Seng via `EWH` proxy (free tier has no index access; SPY proxies S&P 500). D1 = Twelve Data. D2 = script-driven commit (no plugin hook). MCP = none. New agent skills = none (reused fetch script + interactive autoresearch).
+
+**Bugs caught by running it:** ETF-proxy requirement (indices gated); macOS Python had no CA bundle (→ `/etc/ssl/cert.pem`); `.gitignore` `????-??-??.md` silently un-tracked every daily snapshot (→ negation added, snapshots recovered).
+
+**Operate it:**
+- On demand: `TWELVEDATA_API_KEY=$(sed 's/.*=//' ~/.config/market-loop.env) bash bin/run-market-loop.sh` (or just let cron run it)
+- Narrative: in a session, "research today's market drivers" → files the concept page
+- Watch: `tail -f .vault-meta/market-loop.log` · Remove schedule: `crontab -e`
+- Maintenance: `lint the wiki` weekly; enable `bin/setup-retrieve.sh` past ~100 pages
+
+**Deferred:** Phase 4 cloud-automation (routine that clones repo + runs autoresearch daily) — revisit after a week of interactive use. Chart PNGs (layer 2, needs matplotlib). Raw-JSON retention pruning past 90 days.
+
+---
+
+
 Goal: a recurring loop that pulls market data for US / China / Singapore plus SPX, BTCUSD, XAUUSD, NVDA, MSFT; runs `/autoresearch` for narrative context; ingests everything into the vault via `wiki-ingest`; produces chart analysis; and auto-commits each cycle.
 
 Status: **plan only, nothing built.** Three blockers were found during pre-flight verification (§1) and one of them needs your decision before Phase 1.
