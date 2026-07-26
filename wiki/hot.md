@@ -18,7 +18,7 @@ related:
 Navigation: [[index]] | [[log]] | [[overview]]
 
 ## Last Updated
-2026-07-27 (auto-commit hook verified live)
+2026-07-27 (auto-commit hook logic verified; harness-fire pending fresh session)
 
 ## Key Recent Facts
 - **This vault now runs two workstreams**: (1) an automated **markets loop**, (2) on-demand **autoresearch**.
