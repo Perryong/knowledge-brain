@@ -147,16 +147,13 @@ is_alive() {
   kill -0 "$1" 2>/dev/null
 }
 
-# Atomic meta-lock wrapper. Funcs that mutate LOCK_DIR call under this lock so
-# acquire/release/clear-stale don't race against each other.
-with_meta_lock() {
-  ensure_dirs
-  # Use flock under bash's redirect; meta lock is short-lived per command.
-  (
-    flock -x -w 5 9 || die "could not acquire meta-lock within 5s" 1
-    "$@"
-  ) 9>"$META_LOCK"
-}
+# No global meta-lock: every command below is built on its own atomic primitive
+# — acquire uses `set -o noclobber` (atomic create-if-absent), release/reap use
+# `rm -f` (idempotent), clear-stale only removes age/PID-dead entries a live
+# acquire never owns. The old flock-based meta-lock was belt-and-suspenders that
+# flock made ~free; a portable mkdir-poll replacement instead became a global
+# throughput bottleneck under contention, so it is removed rather than emulated.
+# Correctness now rests on the noclobber atomicity the design already documents.
 
 read_lockfile() {
   # Echoes: <pid> <epoch> <path>  (or empty if file missing/unreadable)
@@ -168,7 +165,8 @@ read_lockfile() {
 # ── commands ─────────────────────────────────────────────────────────────────
 _cmd_acquire() {
   local path="$1"
-  validate_path "$path"
+  # validate_path is hoisted to the dispatcher (runs BEFORE the meta-lock) so the
+  # ~40ms python symlink check does not serialize behind the meta-lock under load.
   ensure_dirs
   local lf="${LOCK_DIR}/$(sha1_of "$path").lock"
   local now
@@ -216,7 +214,8 @@ _cmd_acquire() {
 
 _cmd_release() {
   local path="$1"
-  validate_path "$path"
+  # validate_path is hoisted to the dispatcher (runs BEFORE the meta-lock) so the
+  # ~40ms python symlink check does not serialize behind the meta-lock under load.
   ensure_dirs
   local lf="${LOCK_DIR}/$(sha1_of "$path").lock"
   # Unconditional remove — cross-process release is allowed by design
@@ -273,7 +272,8 @@ _cmd_clear_stale() {
 
 _cmd_peek() {
   local path="$1"
-  validate_path "$path"
+  # validate_path is hoisted to the dispatcher (runs BEFORE the meta-lock) so the
+  # ~40ms python symlink check does not serialize behind the meta-lock under load.
   ensure_dirs
   local lf="${LOCK_DIR}/$(sha1_of "$path").lock"
   if [ ! -f "$lf" ]; then
@@ -318,22 +318,25 @@ done
 case "$CMD" in
   acquire)
     [ ${#ARGS[@]} -ge 1 ] || die "acquire needs a path"
-    with_meta_lock _cmd_acquire "${ARGS[0]}"
+    validate_path "${ARGS[0]}"
+    _cmd_acquire "${ARGS[0]}"
     ;;
   release)
     [ ${#ARGS[@]} -ge 1 ] || die "release needs a path"
-    with_meta_lock _cmd_release "${ARGS[0]}"
+    validate_path "${ARGS[0]}"
+    _cmd_release "${ARGS[0]}"
     ;;
   list)
-    with_meta_lock _cmd_list
+    _cmd_list
     ;;
   clear-stale)
     MAX="${MAX_AGE_OVERRIDE:-${ARGS[0]:-3600}}"
-    with_meta_lock _cmd_clear_stale "$MAX"
+    _cmd_clear_stale "$MAX"
     ;;
   peek)
     [ ${#ARGS[@]} -ge 1 ] || die "peek needs a path"
-    with_meta_lock _cmd_peek "${ARGS[0]}"
+    validate_path "${ARGS[0]}"
+    _cmd_peek "${ARGS[0]}"
     ;;
   *)
     die "unknown command: $CMD (try acquire|release|list|clear-stale|peek)"

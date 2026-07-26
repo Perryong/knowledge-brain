@@ -31,12 +31,24 @@ mkdir -p "$(dirname "$COUNTER_FILE")" || {
   exit 2
 }
 
-# Acquire exclusive lock with 5-second timeout. Release automatically on scope exit.
-exec 9>"$LOCK_FILE"
-if ! flock -x -w 5 9; then
-  echo "ERR: could not acquire address allocator lock within 5s" >&2
-  exit 1
-fi
+# Acquire exclusive lock with 5-second timeout. mkdir-based (not flock): atomic
+# on POSIX, no external tool, so it works on macOS where flock(1) is absent.
+_alloc_mtime() { stat -f %m "$1" 2>/dev/null || stat -c %Y "$1" 2>/dev/null || echo 0; }
+LOCK_D="${LOCK_FILE}.d"
+_alloc_waited=0
+while ! mkdir "$LOCK_D" 2>/dev/null; do
+  # ponytail: 30s stale-reap — one allocation is sub-second; older = dead holder.
+  if [ -d "$LOCK_D" ] && [ "$(( $(date +%s) - $(_alloc_mtime "$LOCK_D") ))" -ge 30 ]; then
+    rmdir "$LOCK_D" 2>/dev/null && continue
+  fi
+  _alloc_waited=$((_alloc_waited + 1))
+  if [ "$_alloc_waited" -ge 50 ]; then
+    echo "ERR: could not acquire address allocator lock within 5s" >&2
+    exit 1
+  fi
+  sleep 0.1
+done
+trap 'rmdir "$LOCK_D" 2>/dev/null' EXIT   # release on any exit
 
 scan_max_c_address() {
   # Emit the largest NNNNNN from "address: c-NNNNNN" lines that appear inside
