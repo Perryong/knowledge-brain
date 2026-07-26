@@ -28,7 +28,7 @@ Navigation: [[index]] | [[log]] | [[overview]]
 ## Recent Changes
 - Total pages 34 → **72**; sources ingested → 4.
 - claude-obsidian plugin **reinstalled** (19 skills, hooks active).
-- Two bugs found while building: (a) `wiki-lock.sh` needs `flock` (absent on macOS) → locks + auto-commit hook non-functional here, commits done manually; (b) fixed earlier: `.gitignore ????-??-??.md` was swallowing daily market snapshots.
+- Two bugs found and **fixed** while building: (a) `wiki-lock.sh` + `allocate-address.sh` needed `flock` (absent on macOS) → **fixed in `b9c5391`** (dropped the redundant global lock; per-file noclobber atomicity suffices); `make test` now 9/9 green and the auto-commit hook fires again; (b) `.gitignore ????-??-??.md` was swallowing daily market snapshots.
 
 ## Active Threads
 - AI Engineer checklist is a 26-week plan the user works through; may want progress tracking later.
