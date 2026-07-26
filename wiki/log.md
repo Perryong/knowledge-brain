@@ -1,5 +1,15 @@
 ---
 
+## [2026-07-27] research | AI Engineer Role 2026 (autoresearch)
+
+- Type: autoresearch (5 angles, 3 rounds, 2 WebFetch)
+- Synthesis: [[Research AI Engineer Role 2026]]
+- Deliverable: [[AI Engineer Skill Checklist 2026]] (6 domains, tiered + cited + Proof, 3-phase sequencing)
+- Concepts: [[AI Engineer Role Scope 2026]], [[AI Engineer Demanded Skillset 2026]], [[SSDLC for AI Systems]], [[OWASP Top 10 for LLM Applications 2025]], [[AI Governance and Compliance 2026]], [[AI Engineer Five-Year Outlook 2026-2031]], [[AI Engineer Credentialing Paths 2026]]
+- Entities: [[AI Singapore AIAP]], [[IMDA AI Verify]], [[AWS ML Certification]]
+- Key finding: TypeScript/React/IaC/SSDLC/API-first rank High in SG, Medium global — do not average.
+- Note: wiki-lock non-functional on macOS (flock missing); written single-writer, committed manually.
+
 ## [2026-07-25] market | Market snapshot
 
 - Type: market-data
