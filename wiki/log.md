@@ -1,5 +1,13 @@
 ---
 
+## [2026-07-26] market | Market snapshot
+
+- Type: market-data
+- Location: wiki/sources/market-data/2026-07-26.md
+- Instruments: BTCUSD, EWH, MSFT, NVDA, SPY, XAUUSD
+- Source: Twelve Data (daily bars)
+
+
 ## [2026-07-27] research | AI Engineer Role 2026 (autoresearch)
 
 - Type: autoresearch (5 angles, 3 rounds, 2 WebFetch)
