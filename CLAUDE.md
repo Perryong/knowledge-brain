@@ -61,6 +61,10 @@ Do NOT read the wiki for general coding questions or things already in this proj
 | `/wiki-retrieve` (v1.7) | Hybrid contextual + BM25 + cosine-rerank retrieval (opt-in via `bash bin/setup-retrieve.sh`) |
 | `/wiki-mode` (v1.8) | Methodology modes (LYT / PARA / Zettelkasten / Generic). Set via `bash bin/setup-mode.sh`; consumed by wiki-ingest / save / autoresearch for routing new pages |
 | `/think` (v1.9) | The 10-principle thinking loop (OBSERVE-OBSERVE-LISTEN-THINK-CONNECT-CONNECT-FEEL-ACCEPT-CREATE-GROW) as an invocable workflow. Apply to architectural decisions, audits, post-mortems, ambiguous user requests. Every other skill has a "How to think" appendix mapping this framework to its specific work |
+| `/obsidian-markdown` | Obsidian Flavored Markdown reference: wikilinks, embeds, callouts, properties, tags, math, canvas syntax. Consult when creating or editing any wiki page |
+| `/obsidian-bases` | Create and edit Obsidian Bases (`.base` files) — the native database layer for dynamic tables, card/list views, filters, formulas over vault notes |
+| `/defuddle` | Strip ads, nav, and boilerplate from a web page before ingest, leaving clean markdown (40-60% token saving). Pairs with `wiki-ingest` §URL Ingestion |
+| `/wiki-fold` | Roll up the last 2^k entries of `wiki/log.md` into a structurally-idempotent fold page under `wiki/folds/`. Extractive only, dry-run by default (DragonScale) |
 
 ## Transport (v1.7+)
 
