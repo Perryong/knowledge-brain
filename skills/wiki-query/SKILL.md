@@ -27,7 +27,7 @@ Full decision tree: [`wiki/references/transport-fallback.md`](../../wiki/referen
 If `wiki-retrieve` is feature-detected — `[ -x scripts/retrieve.py ] && [ -d .vault-meta/chunks ] && [ -f .vault-meta/bm25/index.json ]` — Standard and Deep modes consult it BEFORE the legacy hot→index→drill chain:
 
 ```bash
-python3 scripts/retrieve.py "<the user's question verbatim>" --top 5
+bash scripts/python-bin.sh scripts/retrieve.py "<the user's question verbatim>" --top 5
 ```
 
 Output is JSON with a `candidates` array. Each candidate has `absolute_path` to the source page, a `snippet`, and `bm25_score` + `rerank_score`. Read the cited pages (using the transport selector from §Transport above) and synthesize with chunk-level citation.

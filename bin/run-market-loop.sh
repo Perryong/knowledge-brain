@@ -12,11 +12,24 @@ set -euo pipefail
 VAULT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$VAULT"
 
+# Resolve a WORKING Python 3. Never probe with `command -v python3`: on Windows
+# that name is a Microsoft Store stub which is present on PATH but exits 49 when
+# run. See scripts/python-bin.sh.
+PY="$(bash "${VAULT}/scripts/python-bin.sh" 2>/dev/null || true)"
+if [ -z "$PY" ]; then
+  echo "ERROR: no working Python 3 found (tried python3, python, py -3)." >&2
+  echo "       If 'python3' prints \"Python was not found\", disable the Microsoft" >&2
+  echo "       Store alias: Settings > Apps > Advanced app settings >" >&2
+  echo "       App execution aliases > turn off python3.exe" >&2
+  exit 1
+fi
+
+
 : "${TWELVEDATA_API_KEY:?set TWELVEDATA_API_KEY in the environment (never in a tracked file)}"
 
-echo "[$(date '+%F %T')] fetch"   && python3 scripts/fetch-market.py
-echo "[$(date '+%F %T')] analyze" && python3 scripts/analyze-market.py
-echo "[$(date '+%F %T')] render"  && python3 scripts/render-market.py
+echo "[$(date '+%F %T')] fetch"   && $PY scripts/fetch-market.py
+echo "[$(date '+%F %T')] analyze" && $PY scripts/analyze-market.py
+echo "[$(date '+%F %T')] render"  && $PY scripts/render-market.py
 
 if [ -d .git ]; then
   git add -- wiki/ .raw/market-data/

@@ -76,7 +76,8 @@
 
 set -euo pipefail
 
-VAULT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VAULT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 META_DIR="${VAULT_ROOT}/.vault-meta"
 LOCK_DIR="${META_DIR}/locks"
 META_LOCK="${META_DIR}/.wiki-lock.meta"
@@ -123,18 +124,29 @@ validate_path() {
   esac
   # Symlink canonicalization (only when the path or one of its parents exists).
   # Non-existent paths can pass; the lock acquire itself creates leaves under
-  # LOCK_DIR, not the path itself. We resolve via python3 (portable across
+  # LOCK_DIR, not the path itself. We resolve via Python (portable across
   # GNU coreutils + macOS BSD where realpath flag semantics differ).
-  if command -v python3 >/dev/null 2>&1; then
-    local resolved root
-    resolved=$(VAULT_ROOT_BASH="$VAULT_ROOT" P_BASH="$p" python3 -c '
+  #
+  # The interpreter is resolved by EXECUTION, not by `command -v python3`.
+  # On Windows `python3` is normally a Microsoft Store alias stub: present on
+  # PATH (so the old `command -v` guard passed) but exiting 49 when run. Under
+  # `set -e` that made the command substitution below abort validate_path with
+  # rc=49, so acquire/release/peek ALL failed and advisory locking silently
+  # degraded to a no-op on every Windows vault. See scripts/python-bin.sh.
+  local py resolved
+  # SCRIPT_DIR, not VAULT_ROOT: WIKI_LOCK_VAULT retargets VAULT_ROOT at a
+  # sandbox that has no scripts/ dir, which would silently skip this check.
+  py="$(bash "${SCRIPT_DIR}/python-bin.sh" 2>/dev/null || true)"
+  if [ -n "$py" ]; then
+    # shellcheck disable=SC2086
+    resolved=$(VAULT_ROOT_BASH="$VAULT_ROOT" P_BASH="$p" $py -c '
 import os, sys
 root = os.path.realpath(os.environ["VAULT_ROOT_BASH"])
 candidate = os.environ["P_BASH"]
 target = os.path.realpath(os.path.join(root, candidate))
 common = os.path.commonpath([root, target]) if target else ""
 sys.stdout.write("INSIDE" if common == root else "OUTSIDE")
-' 2>/dev/null)
+' 2>/dev/null || true)
     [ "$resolved" = "OUTSIDE" ] && die "path resolves outside vault via symlink: $p" 4
   fi
   return 0

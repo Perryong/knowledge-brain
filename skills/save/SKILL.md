@@ -32,7 +32,7 @@ Full decision tree: [`wiki/references/transport-fallback.md`](../../wiki/referen
 
 ## Mode awareness (v1.8+)
 
-Before creating the session note, consult the vault's methodology mode via `python3 scripts/wiki-mode.py route session "<topic-summary>"`. The router returns the vault-relative path:
+Before creating the session note, consult the vault's methodology mode via `bash scripts/python-bin.sh scripts/wiki-mode.py route session "<topic-summary>"`. The router returns the vault-relative path:
 
 - **generic**: `wiki/sessions/<date>-<topic>.md` (v1.7 default)
 - **LYT**: `wiki/notes/<date>-<topic>.md` + update the relevant session/journal MOC
@@ -84,7 +84,7 @@ If the user specifies a type, use that. If not, pick the best fit based on the c
 2. **Project CLAUDE.md or global `~/.claude/CLAUDE.md` `/save` rule.** If either declares a personal-vault destination (e.g., `~/Documents/Obsidian Vault/`), that is the destination ROOT. The Note Type table below describes paths relative to whichever root is active. Append the new note to `<root>/log/ingest-log.md` at the top, in the format that file already uses.
 3. **Default.** The project's own `wiki/` folder.
 
-The mode router (`python3 scripts/wiki-mode.py route session "<topic>"`) applies when filing into the project's own `wiki/`. When filing into a personal-vault root, use the canonical folders documented in that vault's CLAUDE.md (commonly `sessions/`, `concepts/`, `sources/`) — the mode router is NOT consulted for personal-vault writes by default. Filename sanitization (slug + safe_name) still applies regardless of root: strip path separators, NUL bytes, control chars, leading dots/hyphens.
+The mode router (`bash scripts/python-bin.sh scripts/wiki-mode.py route session "<topic>"`) applies when filing into the project's own `wiki/`. When filing into a personal-vault root, use the canonical folders documented in that vault's CLAUDE.md (commonly `sessions/`, `concepts/`, `sources/`) — the mode router is NOT consulted for personal-vault writes by default. Filename sanitization (slug + safe_name) still applies regardless of root: strip path separators, NUL bytes, control chars, leading dots/hyphens.
 
 **Then continue the workflow:**
 

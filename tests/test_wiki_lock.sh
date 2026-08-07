@@ -139,11 +139,18 @@ assert_eq "acquire empty path rejected" "4" "$RC_EMPTY"
 # ── path validation: newline rejected (v1.7.2; closes audit M4) ──────────────
 # Newlines in lock paths would break the meta-lock line format (key=value lines
 # separated by literal \n). Must be rejected at validate_path() time.
-RC_NL=$( (wl acquire $'wiki/concepts/Foo\nbar.md' >/dev/null 2>&1); echo $? )
+# Build these with printf, NOT $'…'. On Git Bash (Windows) an ANSI-C \r inside
+# a command substitution is normalised away before it reaches the child, so the
+# test would hand wiki-lock a perfectly VALID path, watch it acquire cleanly,
+# and report a false failure — while also leaking a lock that skewed the stress
+# count below from 10 to 11. printf survives the round trip on every platform.
+NL_PATH="$(printf 'wiki/concepts/Foo\nbar.md')"
+RC_NL=$( (wl acquire "$NL_PATH" >/dev/null 2>&1); echo $? )
 assert_eq "acquire newline path rejected" "4" "$RC_NL"
 
 # ── path validation: carriage return rejected (v1.7.2; closes audit M4) ──────
-RC_CR=$( (wl acquire $'wiki/concepts/Foo\rbar.md' >/dev/null 2>&1); echo $? )
+CR_PATH="$(printf 'wiki/concepts/Foo\rbar.md')"
+RC_CR=$( (wl acquire "$CR_PATH" >/dev/null 2>&1); echo $? )
 assert_eq "acquire carriage-return path rejected" "4" "$RC_CR"
 
 # ── stress: 10 unique paths all acquire cleanly ──────────────────────────────

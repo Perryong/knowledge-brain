@@ -121,31 +121,31 @@ These are the commands wiki-query and autoresearch will execute when wiki-retrie
 
 ### Standard retrieve
 ```bash
-python3 scripts/retrieve.py "your question here" --top 5
+bash scripts/python-bin.sh scripts/retrieve.py "your question here" --top 5
 ```
 Output: JSON with `candidates` array. Each candidate has `absolute_path` to the source page; caller reads that page (using the v1.7 transport selector) and synthesizes.
 
 ### BM25-only (skip rerank)
 ```bash
-python3 scripts/retrieve.py "query" --top 5 --no-rerank
+bash scripts/python-bin.sh scripts/retrieve.py "query" --top 5 --no-rerank
 ```
 Faster (no ollama call); lower quality.
 
 ### Explain mode (debugging)
 ```bash
-python3 scripts/retrieve.py "query" --top 5 --explain
+bash scripts/python-bin.sh scripts/retrieve.py "query" --top 5 --explain
 ```
 Adds an `explain` block with per-stage diagnostics (BM25 candidate count, dedupe size, etc.).
 
 ### Direct BM25 inspection
 ```bash
-python3 scripts/bm25-index.py query "query" --top 10
-python3 scripts/bm25-index.py stats
+bash scripts/python-bin.sh scripts/bm25-index.py query "query" --top 10
+bash scripts/python-bin.sh scripts/bm25-index.py stats
 ```
 
 ### Rerank strategy probe
 ```bash
-python3 scripts/rerank.py "query" --peek
+bash scripts/python-bin.sh scripts/rerank.py "query" --peek
 ```
 Reports which strategy will run (cosine via ollama / no-op).
 
@@ -156,7 +156,7 @@ Reports which strategy will run (cosine via ollama / no-op).
 After this skill is installed, `skills/wiki-query/SKILL.md` standard and deep modes will:
 
 1. Read `wiki/hot.md` (always — quick context).
-2. Call `python3 scripts/retrieve.py "<query>" --top 5`.
+2. Call `bash scripts/python-bin.sh scripts/retrieve.py "<query>" --top 5`.
 3. Read the candidate pages from the result's `absolute_path` field (using the v1.7 transport selector — `obsidian-cli read` or `Read` tool).
 4. Synthesize with chunk-level citation.
 
@@ -171,8 +171,8 @@ If `retrieve.py` exits 10 (feature not provisioned), `wiki-query` falls back to 
 The index is NOT auto-refreshed when wiki pages change. Re-run after substantive ingest sessions:
 
 ```bash
-python3 scripts/contextual-prefix.py --all      # incremental: only re-processes changed pages
-python3 scripts/bm25-index.py build             # always full rebuild (cheap; pure Python)
+bash scripts/python-bin.sh scripts/contextual-prefix.py --all      # incremental: only re-processes changed pages
+bash scripts/python-bin.sh scripts/bm25-index.py build             # always full rebuild (cheap; pure Python)
 ```
 
 A future v1.7.x patch will add an opt-in PostToolUse hook that triggers contextual-prefix + BM25 rebuild after every N writes. For v1.7.0, refresh is manual.

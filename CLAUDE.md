@@ -76,11 +76,31 @@ Do NOT read the wiki for general coding questions or things already in this proj
 
 ## Methodology Modes (v1.8+)
 
-Pick an organizational style for the vault via `bash bin/setup-mode.sh`. Four modes available: **generic** (v1.7 default — no opinion), **LYT** (Linking Your Thinking — MOCs + atomic notes), **PARA** (Projects/Areas/Resources/Archives), **Zettelkasten** (timestamped IDs, flat, dense linking). The mode is written to `.vault-meta/mode.json` (gitignored by default; `git add -f` to commit). `wiki-ingest`, `save`, and `autoresearch` consult `python3 scripts/wiki-mode.py route <type> "<name>"` before filing new pages — no special-casing needed in the consumer skills. Full guide: [docs/methodology-modes-guide.md](docs/methodology-modes-guide.md). Closes priority gap 5 from the May 2026 compass artifact.
+Pick an organizational style for the vault via `bash bin/setup-mode.sh`. Four modes available: **generic** (v1.7 default — no opinion), **LYT** (Linking Your Thinking — MOCs + atomic notes), **PARA** (Projects/Areas/Resources/Archives), **Zettelkasten** (timestamped IDs, flat, dense linking). The mode is written to `.vault-meta/mode.json` (gitignored by default; `git add -f` to commit). `wiki-ingest`, `save`, and `autoresearch` consult `bash scripts/python-bin.sh scripts/wiki-mode.py route <type> "<name>"` before filing new pages — no special-casing needed in the consumer skills. Full guide: [docs/methodology-modes-guide.md](docs/methodology-modes-guide.md). Closes priority gap 5 from the May 2026 compass artifact.
 
 ## Pre-commit verifier (v1.7.1+)
 
 After staging changes for a non-trivial workstream but BEFORE running `git commit`, dispatch the `verifier` agent (`agents/verifier.md`). It reads `git diff --cached`, applies the /best-practices six-cut + agent kernel, and returns findings in four tiers (BLOCKER / HIGH / MEDIUM / LOW) with file:line citations. The agent has read-only tools (Read, Grep, Glob, Bash) — it can inspect but never modify, so its output is purely advisory. This closes the loop the v1.7 audit revealed: code went worker → commit with no separate verifier pass, which is how BLOCKER B1 (data-egress consent gap) slipped through. See `docs/audits/v1.7.0-audit-2026-05-17.md` §10 for the retrospective.
+
+## Python interpreter resolution (v1.9.3+)
+
+**Never call `python3` directly, and never guard with `command -v python3`.** On Windows `python3` is normally a Microsoft Store *App Execution Alias* stub: it sits on PATH (so `command -v` succeeds) but exits 49 when run, printing "Python was not found". Real Python is at `python` / `py -3`.
+
+Use `scripts/python-bin.sh`, which probes by **execution**:
+
+```bash
+bash scripts/python-bin.sh scripts/wiki-mode.py route concept "Foo"   # exec mode
+PY="$(bash scripts/python-bin.sh)"                                    # or resolve first
+bash scripts/python-bin.sh >/dev/null 2>&1 && echo "python available" # availability guard
+```
+
+Order is `python3` → `python` → `py -3`; `WIKI_PYTHON` overrides but is still verified, so a broken override falls back instead of wedging the caller. Exits 1 with remediation guidance when nothing works.
+
+This was not cosmetic. The stub silently disabled **all** advisory locking (`wiki-lock.sh` shells to Python for path validation, so under `set -e` every `acquire`/`release`/`peek` aborted with rc=49 and multi-writer safety became a no-op) and **all** v1.8 mode routing (`wiki-mode.py route` returned the stub's error text). Both failed quietly. `tests/test_wiki_lock.sh` went 6/16 → 16/16 once fixed.
+
+Known unrelated gap: `bm25-index.py`, `rerank.py` and `tiling-check.py` import POSIX-only `fcntl`, so the opt-in retrieval subsystem still does not run on Windows.
+
+Tests: `bash tests/test_python_bin.sh` (9 assertions, including a simulated Store stub).
 
 ## Commit and Push (v1.9.3+)
 

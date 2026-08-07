@@ -33,7 +33,7 @@ Full decision tree: [`wiki/references/transport-fallback.md`](../../wiki/referen
 
 ## Mode awareness (v1.8+)
 
-Before filing research output, consult the vault's methodology mode via `python3 scripts/wiki-mode.py route research "<topic>"`. The router returns the vault-relative path:
+Before filing research output, consult the vault's methodology mode via `bash scripts/python-bin.sh scripts/wiki-mode.py route research "<topic>"`. The router returns the vault-relative path:
 
 - **generic**: `wiki/concepts/<Topic>.md` (v1.7 default)
 - **LYT**: `wiki/notes/<topic>.md` + create or update a topic MOC at `wiki/mocs/<topic>-moc.md`
@@ -65,7 +65,7 @@ The Claude Code `WebFetch` tool has built-in defenses against many of these. App
 
 **4. Failure mode.** If a fetch fails (timeout, 4xx/5xx, content too large, sanitization removed everything), log the URL + reason to `wiki/log.md` and continue the loop. Do NOT abort the whole run. Do NOT silently swallow — every skipped source is a fact the user needs in the synthesis page's "Open Questions" section.
 
-The router (`python3 scripts/wiki-mode.py route`) already sanitizes the topic-derived FILENAME via `safe_name()`. This section adds the second layer: BODY-content hygiene for fetched pages.
+The router (`bash scripts/python-bin.sh scripts/wiki-mode.py route`) already sanitizes the topic-derived FILENAME via `safe_name()`. This section adds the second layer: BODY-content hygiene for fetched pages.
 
 ---
 
@@ -106,7 +106,7 @@ When `/autoresearch` is invoked WITHOUT a topic AND the vault has adopted Dragon
 Feature detection (shell):
 
 ```bash
-if [ -x ./scripts/boundary-score.py ] && [ -d ./.vault-meta ] && command -v python3 >/dev/null 2>&1; then
+if [ -x ./scripts/boundary-score.py ] && [ -d ./.vault-meta ] && bash scripts/python-bin.sh >/dev/null 2>&1; then
   BOUNDARY_MODE=1
 else
   BOUNDARY_MODE=0

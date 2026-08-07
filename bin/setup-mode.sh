@@ -27,6 +27,19 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VAULT="$(dirname "$SCRIPT_DIR")"
+
+# Resolve a WORKING Python 3. Never probe with `command -v python3`: on Windows
+# that name is a Microsoft Store stub which is present on PATH but exits 49 when
+# run. See scripts/python-bin.sh.
+PY="$(bash "${VAULT}/scripts/python-bin.sh" 2>/dev/null || true)"
+if [ -z "$PY" ]; then
+  echo "ERROR: no working Python 3 found (tried python3, python, py -3)." >&2
+  echo "       If 'python3' prints \"Python was not found\", disable the Microsoft" >&2
+  echo "       Store alias: Settings > Apps > Advanced app settings >" >&2
+  echo "       App execution aliases > turn off python3.exe" >&2
+  exit 1
+fi
+
 WM="$VAULT/scripts/wiki-mode.py"
 
 REQUESTED_MODE=""
@@ -60,12 +73,12 @@ if [ ! -x "$WM" ]; then
 fi
 
 # ── Diagnostics ─────────────────────────────────────────────────────────────
-CURRENT=$(python3 "$WM" get 2>/dev/null || echo "generic")
+CURRENT=$($PY "$WM" get 2>/dev/null || echo "generic")
 say "Current mode: $CURRENT"
 
 if $CHECK_ONLY; then
   say ""
-  python3 "$WM" config
+  $PY "$WM" config
   exit 0
 fi
 
@@ -95,7 +108,7 @@ case "$REQUESTED_MODE" in
 esac
 
 # ── Write the mode ──────────────────────────────────────────────────────────
-python3 "$WM" set "$REQUESTED_MODE"
+$PY "$WM" set "$REQUESTED_MODE"
 
 # ── Seed template folders (optional) ────────────────────────────────────────
 if ! $NO_SEED; then

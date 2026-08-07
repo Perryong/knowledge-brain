@@ -102,8 +102,10 @@ echo "Sanity checks:"
 NEXT=$(./scripts/allocate-address.sh --peek 2>&1 | tail -1)
 echo "  next address: c-$(printf '%06d' $NEXT)"
 
-PYTHON=$(command -v python3 || echo "not installed")
-echo "  python3:      $PYTHON"
+# Resolve by execution, not `command -v`: the Windows Microsoft Store stub is on
+# PATH and would be reported here as installed while failing every actual call.
+PYTHON=$(bash "$VAULT/scripts/python-bin.sh" 2>/dev/null || echo "NOT FOUND")
+echo "  python 3:     $PYTHON"
 
 if command -v curl >/dev/null 2>&1; then
   if curl -sS --max-time 2 http://localhost:11434/api/version >/dev/null 2>&1; then

@@ -29,6 +29,19 @@
 set -euo pipefail
 
 VAULT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Resolve a WORKING Python 3. Never probe with `command -v python3`: on Windows
+# that name is a Microsoft Store stub which is present on PATH but exits 49 when
+# run. See scripts/python-bin.sh.
+PY="$(bash "${VAULT_ROOT}/scripts/python-bin.sh" 2>/dev/null || true)"
+if [ -z "$PY" ]; then
+  echo "ERROR: no working Python 3 found (tried python3, python, py -3)." >&2
+  echo "       If 'python3' prints \"Python was not found\", disable the Microsoft" >&2
+  echo "       Store alias: Settings > Apps > Advanced app settings >" >&2
+  echo "       App execution aliases > turn off python3.exe" >&2
+  exit 1
+fi
+
 META_DIR="${VAULT_ROOT}/.vault-meta"
 OUTPUT_FILE="${META_DIR}/transport.json"
 STALE_AFTER_DAYS=7
@@ -60,7 +73,7 @@ log() { $QUIET || echo "$@" >&2; }
 # transport.json heredoc — newlines, backslashes, control chars in upstream
 # binaries (obsidian-cli --version) would otherwise break the JSON.
 json_escape() {
-  python3 -c 'import json,sys; print(json.dumps(sys.stdin.read().strip()), end="")'
+  $PY -c 'import json,sys; print(json.dumps(sys.stdin.read().strip()), end="")'
 }
 
 mkdir -p "$META_DIR" || {
@@ -82,7 +95,7 @@ MANUAL_OVERRIDE_FLAG=false
 MANUAL_OVERRIDE_PREFERRED=""
 MANUAL_OVERRIDE_CHAIN=""
 if [ -f "$OUTPUT_FILE" ]; then
-  MANUAL_PARSE="$(python3 - "$OUTPUT_FILE" 2>/dev/null <<'PYEOF'
+  MANUAL_PARSE="$($PY - "$OUTPUT_FILE" 2>/dev/null <<'PYEOF'
 import json, sys
 try:
     with open(sys.argv[1]) as fh:

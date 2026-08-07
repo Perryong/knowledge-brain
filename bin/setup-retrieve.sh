@@ -40,6 +40,19 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VAULT="$(dirname "$SCRIPT_DIR")"
+
+# Resolve a WORKING Python 3. Never probe with `command -v python3`: on Windows
+# that name is a Microsoft Store stub which is present on PATH but exits 49 when
+# run. See scripts/python-bin.sh.
+PY="$(bash "${VAULT}/scripts/python-bin.sh" 2>/dev/null || true)"
+if [ -z "$PY" ]; then
+  echo "ERROR: no working Python 3 found (tried python3, python, py -3)." >&2
+  echo "       If 'python3' prints \"Python was not found\", disable the Microsoft" >&2
+  echo "       Store alias: Settings > Apps > Advanced app settings >" >&2
+  echo "       App execution aliases > turn off python3.exe" >&2
+  exit 1
+fi
+
 META="$VAULT/.vault-meta"
 
 NO_LLM=false
@@ -194,7 +207,7 @@ $REBUILD && ARGS+=("--rebuild")
 # Disable set -e for the call so we can inspect the exit code and offer a
 # concrete recovery hint instead of aborting with a bare trace.
 set +e
-python3 "$VAULT/scripts/contextual-prefix.py" "${ARGS[@]}"
+$PY "$VAULT/scripts/contextual-prefix.py" "${ARGS[@]}"
 STAGE1_RC=$?
 set -e
 if [ "$STAGE1_RC" -ne 0 ]; then
@@ -203,19 +216,19 @@ if [ "$STAGE1_RC" -ne 0 ]; then
   warn "Recovery options:"
   warn "  1. Re-run setup-retrieve.sh — body_hash skips already-processed chunks."
   warn "  2. Wipe and start over:  rm -rf $META/chunks/ && bash bin/setup-retrieve.sh"
-  warn "  3. Re-process one page:  python3 scripts/contextual-prefix.py wiki/<failing-page>.md --rebuild"
+  warn "  3. Re-process one page:  $PY scripts/contextual-prefix.py wiki/<failing-page>.md --rebuild"
   exit 5
 fi
 
 # ── 6. Build BM25 index ──────────────────────────────────────────────────────
 say ""
 say "═══ Stage 2/2: BM25 index build ═══"
-python3 "$VAULT/scripts/bm25-index.py" build
+$PY "$VAULT/scripts/bm25-index.py" build
 
 # ── 7. Smoke-test retrieve.py ────────────────────────────────────────────────
 say ""
 say "═══ Smoke test ═══"
-SMOKE_OUT="$(python3 "$VAULT/scripts/retrieve.py" "wiki" --top 1 2>/dev/null || echo '{}')"
+SMOKE_OUT="$($PY "$VAULT/scripts/retrieve.py" "wiki" --top 1 2>/dev/null || echo '{}')"
 if echo "$SMOKE_OUT" | grep -q '"candidates":'; then
   say "✓ retrieve.py returns valid JSON"
 else
@@ -226,7 +239,7 @@ say ""
 say "═══ wiki-retrieve is provisioned. ═══"
 say ""
 say "Usage from the command line:"
-say "  python3 scripts/retrieve.py \"your question here\" --top 5"
+say "  $PY scripts/retrieve.py \"your question here\" --top 5"
 say ""
 say "Other skills (wiki-query, autoresearch) will now automatically use the"
 say "hybrid pipeline when answering questions. See skills/wiki-retrieve/SKILL.md."

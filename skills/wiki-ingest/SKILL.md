@@ -25,17 +25,17 @@ Full decision tree: [`wiki/references/transport-fallback.md`](../../wiki/referen
 
 ## Mode awareness (v1.8+)
 
-Before creating any new wiki page, consult the vault's methodology mode via `python3 scripts/wiki-mode.py route <type> "<name>"`. The router returns the vault-relative path where the page should be filed.
+Before creating any new wiki page, consult the vault's methodology mode via `bash scripts/python-bin.sh scripts/wiki-mode.py route <type> "<name>"`. The router returns the vault-relative path where the page should be filed.
 
 ```bash
-SRC_PATH=$(python3 scripts/wiki-mode.py route source "Karpathy 2025 LLM Wiki essay")
+SRC_PATH=$(bash scripts/python-bin.sh scripts/wiki-mode.py route source "Karpathy 2025 LLM Wiki essay")
 # generic:      wiki/sources/Karpathy-2025-LLM-Wiki-essay.md
 # lyt:          wiki/notes/Karpathy-2025-LLM-Wiki-essay.md  (also update relevant MOC)
 # para:         wiki/resources/incoming/Karpathy-2025-LLM-Wiki-essay.md
 # zettelkasten: wiki/20260517123456-Karpathy-2025-LLM-Wiki-essay.md
 
-ENT_PATH=$(python3 scripts/wiki-mode.py route entity "Andrej Karpathy")
-CON_PATH=$(python3 scripts/wiki-mode.py route concept "Compounding Vault Pattern")
+ENT_PATH=$(bash scripts/python-bin.sh scripts/wiki-mode.py route entity "Andrej Karpathy")
+CON_PATH=$(bash scripts/python-bin.sh scripts/wiki-mode.py route concept "Compounding Vault Pattern")
 ```
 
 If `.vault-meta/mode.json` is absent, the router returns mode=generic paths (identical to v1.7 behavior). No special-casing needed in this skill.

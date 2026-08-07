@@ -259,7 +259,7 @@ Lint only observes. Do NOT auto-assign missing addresses during lint. Assignment
 ### Detection and delegation
 
 ```bash
-if [ -x ./scripts/tiling-check.py ] && command -v python3 >/dev/null 2>&1; then
+if [ -x ./scripts/tiling-check.py ] && bash scripts/python-bin.sh >/dev/null 2>&1; then
   ./scripts/tiling-check.py --peek > /tmp/tiling-peek.json 2>/dev/null
   PEEK_EXIT=$?
   case $PEEK_EXIT in
