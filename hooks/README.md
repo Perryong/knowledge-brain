@@ -10,6 +10,27 @@ Plugin hooks for the claude-obsidian wiki vault. All hooks are defined in `hooks
 | `PostCompact` | prompt | Re-loads `wiki/hot.md` after context compaction. Hook-injected context does NOT survive compaction (only `CLAUDE.md` does), so this hook restores the hot cache mid-session. |
 | `PostToolUse` | command | Auto-commits any wiki/ or .raw/ changes after Write or Edit tool calls. Guarded by `[ -d .git ]` so it never errors in non-git directories, and by `git diff --cached --quiet` so it never creates empty commits. |
 | `Stop` | prompt | Updates `wiki/hot.md` at the end of every Claude response with a brief summary of what changed. |
+| `SessionEnd` | command | Runs `scripts/wiki-sync.sh sync` — commits any stragglers and **pushes** to the tracking branch. Safety net for the commit-and-push step in `wiki`, `wiki-ingest` and `autoresearch`: those skills push with a meaningful message, this catches the runs where that didn't happen. Guarded by `[ -d wiki ]` and `[ -x scripts/wiki-sync.sh ]`, so non-vault sessions are unaffected. |
+
+## Push Behaviour
+
+`SessionEnd` is the only hook that touches the network, and **it will not push unless the vault has been explicitly armed.** `wiki-sync.sh` requires `.vault-meta/auto-push.enabled`; absent that it commits locally and stops. Installing or upgrading the plugin therefore never starts publishing on its own.
+
+```bash
+bash bin/setup-push.sh            # consent checkpoint, then arm
+bash bin/setup-push.sh --disable  # disarm
+```
+
+**Why the gate:** `PostToolUse` stages `.raw/` unconditionally, so ingested source documents reach the remote — world-readable on a public vault. This matches the repo's other egress gates (`--allow-egress`, `--allow-remote-ollama`): network egress is opt-in.
+
+Once armed, the script still never force-pushes, never auto-rebases, refuses a diverged remote, and runs git non-interactively under a timeout so an expired credential can't hang session teardown. All outcomes land in `.vault-meta/hook.log`.
+
+Overrides, both gitignored so they stay host-local:
+
+```bash
+touch .vault-meta/auto-push.disabled     # commit locally, never push
+touch .vault-meta/auto-commit.disabled   # neither commit nor push
+```
 
 ## Known Issue: Plugin Hooks STDOUT Bug
 

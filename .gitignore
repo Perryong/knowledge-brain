@@ -137,3 +137,9 @@ _attachments/
 
 # market loop run log
 .vault-meta/market-loop.log
+
+# wiki-sync consent sentinels + self-mutex (v1.9.3). Host-specific by design:
+# whether THIS machine publishes its vault must never propagate to a clone.
+.vault-meta/auto-push.enabled
+.vault-meta/*.disabled
+.vault-meta/.wiki-sync.lock/

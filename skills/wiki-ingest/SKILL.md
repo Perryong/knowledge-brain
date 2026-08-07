@@ -185,6 +185,7 @@ Steps:
     - Key insight: One sentence on what is new.
     ```
 11. **Check for contradictions.** If new info conflicts with existing pages, add `> [!contradiction]` callouts on both pages.
+12. **Commit and push.** See `## Commit and Push` below. Do this LAST, after every lock is released.
 
 ---
 
@@ -199,8 +200,47 @@ Steps:
 3. After all sources: do a cross-reference pass. Look for connections between the newly ingested sources.
 4. Update index, hot cache, and log once at the end (not per-source).
 5. Report: "Processed N sources. Created X pages, updated Y pages. Here are the key connections I found."
+6. Commit and push ONCE at the end, not per-source. See `## Commit and Push` below.
 
 Batch ingest is less interactive. For 30+ sources, expect significant processing time. Check in with the user after every 10 sources.
+
+---
+
+## Commit and Push
+
+Close every ingest by syncing the vault to its remote:
+
+```bash
+bash scripts/wiki-sync.sh sync "wiki-ingest: [Source Title] — N pages created, N updated"
+```
+
+One commit per ingest, not per page. The PostToolUse hook already fires a generic
+`wiki: auto-commit <timestamp>` after individual writes; this step is what makes
+the ingest legible in `git log` as a single named unit of work.
+
+The script stages `wiki/`, `.raw/` and `.vault-meta/`, commits with an explicit
+pathspec (so a file the user staged by hand is never swept in), and — only if the
+vault has been armed for push — sends it to the tracking branch. Every failure
+path exits 0 with a printed reason, so a network
+drop can't break an ingest — but **read the output**. `push failed` means the
+pages are committed locally and have not reached the remote.
+
+Run this only after ALL locks are released. `wiki-sync` refuses to commit while a
+`wiki-lock` is held (a mid-flight write would produce a torn commit) and defers to
+the SessionEnd hook instead — which works, but silently delays the push.
+
+**Push is opt-in.** `wiki-sync` always commits, but only pushes if the vault has
+been armed with `.vault-meta/auto-push.enabled`. On an unarmed vault you'll see
+`push not armed — N commit(s) held locally`; that is correct behaviour, not an
+error. Do NOT arm it yourself — `bash bin/setup-push.sh` is a consent checkpoint
+that shows the user their remote's visibility before enabling egress.
+
+> [!warning] Push publishes
+> `.raw/` is committed unconditionally, so every ingested source document goes to
+> the remote once armed. If the vault's remote is public, so is the source
+> material — worth flagging to the user before ingesting anything personal,
+> licensed, or embargoed. To hold a single ingest back on an armed vault,
+> `touch .vault-meta/auto-push.disabled`; commits still happen, pushes don't.
 
 ---
 

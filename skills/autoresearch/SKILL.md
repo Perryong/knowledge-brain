@@ -240,6 +240,44 @@ sources:
    - Key finding: [one sentence]
    ```
 3. Update `wiki/hot.md` with the research summary
+4. **Commit and push.** See `## Commit and Push` below. Do this LAST, after every
+   page is written and every lock released.
+
+---
+
+## Commit and Push
+
+Close every run by syncing the vault to its remote:
+
+```bash
+bash scripts/wiki-sync.sh sync "autoresearch: [Topic] — N pages, N sources"
+```
+
+The message is the point. `wiki-sync` falls back to a generic timestamp, but an
+autoresearch run should read as one unit of work in `git log` — the topic and
+the page count, not `wiki: auto-commit 2026-08-07 14:32`.
+
+The script stages `wiki/`, `.raw/` and `.vault-meta/`, commits, and — only if the
+vault has been armed for push — sends it to the tracking branch. It exits 0 on
+every failure path and prints the reason, so a
+dropped network or an expired credential never breaks a research run — but
+**read its output**. `push failed` means the work is committed locally and still
+needs to reach the remote.
+
+**Push is opt-in.** `wiki-sync` always commits, but only pushes if the vault has
+been armed with `.vault-meta/auto-push.enabled`. On an unarmed vault you'll see
+`push not armed — N commit(s) held locally`; that is correct, not an error. Do
+NOT arm it yourself — `bash bin/setup-push.sh` is a consent checkpoint that shows
+the user their remote's visibility first.
+
+> [!warning] Push publishes
+> `.raw/` is committed unconditionally, so anything the research loop fetched into
+> it goes to the remote once armed. Web-sourced material on a public vault becomes
+> public — and autoresearch fetches without asking per-source. To hold a run back,
+> `touch .vault-meta/auto-push.disabled` before starting; commits still happen.
+
+If the run wrote nothing (no new pages, no manifest change), skip this step —
+`wiki-sync` will no-op anyway, but don't spend the call.
 
 ---
 

@@ -51,6 +51,17 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -d wiki ] && [ -f scripts/wiki-sync.sh ] && bash scripts/wiki-sync.sh sync >/dev/null 2>&1 || true"
+          }
+        ]
+      }
     ]
   }
 }

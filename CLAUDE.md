@@ -82,6 +82,27 @@ Pick an organizational style for the vault via `bash bin/setup-mode.sh`. Four mo
 
 After staging changes for a non-trivial workstream but BEFORE running `git commit`, dispatch the `verifier` agent (`agents/verifier.md`). It reads `git diff --cached`, applies the /best-practices six-cut + agent kernel, and returns findings in four tiers (BLOCKER / HIGH / MEDIUM / LOW) with file:line citations. The agent has read-only tools (Read, Grep, Glob, Bash) — it can inspect but never modify, so its output is purely advisory. This closes the loop the v1.7 audit revealed: code went worker → commit with no separate verifier pass, which is how BLOCKER B1 (data-egress consent gap) slipped through. See `docs/audits/v1.7.0-audit-2026-05-17.md` §10 for the retrospective.
 
+## Commit and Push (v1.9.3+)
+
+`scripts/wiki-sync.sh` is the single code path for getting vault changes to the remote. Two callers:
+
+1. **Skills.** `wiki`, `wiki-ingest` and `autoresearch` each close a run with `bash scripts/wiki-sync.sh sync "<meaningful message>"`, so `git log` reads as named units of work instead of a wall of `wiki: auto-commit <timestamp>`.
+2. **`SessionEnd` hook.** Safety net — pushes whatever the skills committed but didn't push.
+
+The script stages `wiki/ .raw/ .vault-meta/`, commits with an explicit pathspec (never sweeps in a manually staged file — closes the v1.9.0 audit finding), and pushes. It defers while any `wiki-lock` is held, holds its own mutex so a skill run and the hook can't collide on `.git/index.lock`, refuses to push over a diverged remote, never force-pushes or auto-rebases, runs git non-interactively under a timeout, and exits 0 on every failure path with the reason on stdout and in `.vault-meta/hook.log`. It refuses to act at all if the vault turns out to be a subdirectory of a larger repository.
+
+**Push is opt-in.** Committing is local and safe; pushing is egress that publishes the vault, and `.raw/` is staged unconditionally — so source documents go with it, world-readable on a public remote. Following the same precedent as `contextual-prefix.py --allow-egress` and `tiling-check.py --allow-remote-ollama`, `wiki-sync` will not push unless `.vault-meta/auto-push.enabled` exists. Without it the vault still commits, just never publishes — so upgrading the plugin can't turn an existing user into a publisher.
+
+```bash
+bash bin/setup-push.sh            # consent checkpoint: shows remote, visibility, and what ships
+bash bin/setup-push.sh --status   # is it armed?
+bash bin/setup-push.sh --disable  # disarm
+```
+
+Overrides (all gitignored, so they never propagate to a clone): `.vault-meta/auto-push.disabled` blocks push regardless of the sentinel; `.vault-meta/auto-commit.disabled` blocks both.
+
+Tests: `bash tests/test_wiki_sync.sh` (26 assertions, hermetic — temp vault + local bare remote, no network).
+
 ## MCP (Optional)
 
 If you configured the MCP server, Claude can read and write vault notes directly.

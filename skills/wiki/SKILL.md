@@ -127,6 +127,7 @@ Steps:
 8. Create the vault CLAUDE.md using the template below.
 9. Initialize git. Read `references/git-setup.md`.
 10. Present the structure and ask: "Want to adjust anything before we start?"
+11. Commit and push the scaffold. See `## Commit and Push` below.
 
 ### Vault CLAUDE.md Template
 
@@ -189,6 +190,54 @@ This keeps token usage low. Hot cache costs ~500 tokens. Index costs ~1000 token
 
 ---
 
+## Commit and Push
+
+Close any operation that changed the vault by syncing to the remote:
+
+```bash
+bash scripts/wiki-sync.sh sync "wiki: [what changed in one line]"
+```
+
+Applies to work THIS skill did directly — scaffolding a vault, editing the index,
+fixing structure. When you route to a sub-skill (`wiki-ingest`, `autoresearch`),
+that skill owns its own sync; don't double-commit on its behalf.
+
+The script stages `wiki/`, `.raw/` and `.vault-meta/` and commits with an explicit
+pathspec. It pushes only if the vault has been armed (see below). It exits 0 on
+every failure path and prints the reason — read it. `push failed` means the work
+is committed locally and did not reach the remote.
+
+States worth knowing:
+
+| Output | Meaning |
+|---|---|
+| `push not armed — N commit(s) held locally` | Normal on a fresh vault. Commits are safe locally; egress is opt-in. See below. |
+| `no upstream tracking branch` | The vault has no remote yet. Expected right after SCAFFOLD — see `references/git-setup.md` to add one. |
+| `remote is N commit(s) ahead — push refused` | The remote moved. `wiki-sync` never force-pushes or auto-rebases. Reconcile by hand, then re-run. |
+| `refusing to touch the enclosing repo` | The vault is a subdirectory of a larger repo. Pushing would publish that repo's unrelated commits. |
+
+**Push is opt-in and arming it is the user's call, not yours.** After SCAFFOLD,
+tell the user their vault commits locally and offer the arming step — don't run
+it unprompted, and never create `.vault-meta/auto-push.enabled` by hand:
+
+```bash
+bash bin/setup-push.sh   # shows remote + visibility + what ships, then asks
+```
+
+To stop pushing without stopping commits: `touch .vault-meta/auto-push.disabled`.
+To stop both: `touch .vault-meta/auto-commit.disabled`.
+
+> [!warning] Push publishes
+> `.raw/` is committed unconditionally. If the vault's remote is public, every
+> source document in it is public too. `references/git-setup.md` recommends a
+> private repo for any vault holding personal notes — surface that before the
+> user arms a public one.
+
+A `SessionEnd` hook runs the same script as a safety net, so anything you commit
+but fail to push still goes out when the session ends.
+
+---
+
 ## Summary
 
 Your job as the LLM:
@@ -199,6 +248,7 @@ Your job as the LLM:
 5. Always update index, sub-indexes, log, and hot cache on changes
 6. Always use frontmatter and wikilinks
 7. Never modify .raw/ sources
+8. Commit and push at the end of every operation that changed the vault
 
 The human's job: curate sources, ask good questions, think about what it means. Everything else is on you.
 
