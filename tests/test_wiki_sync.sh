@@ -189,6 +189,23 @@ touch -d '2000-01-01' "$V/.vault-meta/.wiki-sync.lock" 2>/dev/null \
 OUT="$(sync "$V" sync "wiki: add j")"
 assert_contains "stale mutex: reaped and proceeds" "$OUT" "committed:"
 
+# --- 13. setup-push GitHub slug parsing (no network) -------------------------
+# A slug that keeps its ".git" suffix 404s against the GitHub API, which the
+# checkpoint would report as "private" for a repo that is actually PUBLIC —
+# the one direction a consent gate must never be wrong in.
+SETUP_PUSH="$ROOT/bin/setup-push.sh"
+slug_is() {
+  local got want
+  want="$2"
+  got="$(bash "$SETUP_PUSH" --print-slug "$1" 2>/dev/null)"
+  if [ "$got" = "$want" ]; then ok "slug: $1"; else bad "slug: $1" "want '$want', got '$got'"; fi
+}
+slug_is "https://github.com/Perryong/knowledge-brain.git" "Perryong/knowledge-brain"
+slug_is "https://github.com/Perryong/knowledge-brain"     "Perryong/knowledge-brain"
+slug_is "https://github.com/Perryong/knowledge-brain/"    "Perryong/knowledge-brain"
+slug_is "git@github.com:Perryong/knowledge-brain.git"     "Perryong/knowledge-brain"
+slug_is "ssh://git@github.com/Perryong/knowledge-brain.git" "Perryong/knowledge-brain"
+
 echo
 echo "passed: $PASS   failed: $FAIL"
 [ "$FAIL" -eq 0 ] || exit 1

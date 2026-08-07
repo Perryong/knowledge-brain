@@ -58,19 +58,36 @@ if [ -z "$REMOTE_URL" ]; then
   exit 1
 fi
 
-# Best-effort public/private probe for GitHub HTTPS remotes. Unauthenticated
-# GitHub API returns 200 for public repos and 404 for private/nonexistent ones.
-VISIBILITY="unknown"
+# owner/repo from any GitHub remote form: https://…/o/r(.git), git@…:o/r(.git),
+# with or without a trailing slash. Strip suffixes in separate expressions —
+# POSIX ERE has NO lazy quantifier, so a `([^/]+?)(\.git)?` group silently
+# leaves ".git" attached, and `api.github.com/repos/owner/repo.git` 404s. That
+# misread a PUBLIC repo as private, which is the exact direction this
+# checkpoint must never be wrong in.
+gh_slug() {
+  printf '%s' "$1" | sed -E 's#^.*github\.com[:/]+##; s#\.git$##; s#/+$##'
+}
+
+if [ "${1:-}" = "--print-slug" ]; then   # test hook, no network
+  gh_slug "${2:-}"
+  exit 0
+fi
+
+# Unauthenticated GitHub API: 200 = public. 404 is ambiguous (private, renamed,
+# or nonexistent) and NOT proof of privacy, so it never suppresses the warning.
+VISIBILITY="unconfirmed"
+IS_PUBLIC=0
 case "$REMOTE_URL" in
   *github.com[:/]*)
-    SLUG="$(printf '%s' "$REMOTE_URL" | sed -E 's#.*github\.com[:/]+([^/]+/[^/]+?)(\.git)?/?$#\1#')"
+    SLUG="$(gh_slug "$REMOTE_URL")"
     if command -v curl >/dev/null 2>&1 && [ -n "$SLUG" ]; then
       CODE="$(curl -s -o /dev/null -w '%{http_code}' -m 8 \
         -H 'User-Agent: claude-obsidian-setup-push' \
         "https://api.github.com/repos/${SLUG}" 2>/dev/null || echo 000)"
       case "$CODE" in
-        200) VISIBILITY="PUBLIC" ;;
-        404) VISIBILITY="private (or unreachable anonymously)" ;;
+        200) VISIBILITY="PUBLIC — confirmed via GitHub API"; IS_PUBLIC=1 ;;
+        404) VISIBILITY="unconfirmed (404: private, renamed, or nonexistent — NOT proof of private)" ;;
+        *)   VISIBILITY="unconfirmed (probe returned HTTP $CODE)" ;;
       esac
     fi
     ;;
@@ -91,14 +108,19 @@ say "  wiki/        $WIKI_COUNT tracked file(s)"
 say "  .raw/        $RAW_COUNT tracked file(s)   <- your SOURCE DOCUMENTS"
 say "  .vault-meta/ runtime state"
 say ""
-if [ "$VISIBILITY" = "PUBLIC" ]; then
+if [ "$IS_PUBLIC" = "1" ]; then
   say "  This remote is PUBLIC. Everything above becomes world-readable,"
   say "  including anything you later drop into .raw/. Published content is"
   say "  cached and indexed by third parties — deleting it later does not"
   say "  fully undo that. Do not arm this on a vault holding personal notes,"
   say "  licensed material, or anything embargoed."
-  say ""
+else
+  say "  Visibility could NOT be confirmed from here. Treat this remote as"
+  say "  public until you have checked it yourself (GitHub > repo > Settings,"
+  say "  or the lock icon by the repo name). A failed probe is not evidence"
+  say "  of privacy, and publishing source documents is not reversible."
 fi
+say ""
 say "Reversible at any time:  bash bin/setup-push.sh --disable"
 say "───────────────────────────────────────────────────────────"
 
