@@ -1,0 +1,22 @@
+{
+  "_comment": "Defaults used by scripts/check_rules.py and bt_prepare.py. pullback_band_pct is measured against EMA21; the ma200_* and ma30_* zones are context notes only. The VAULT PAGES ARE THE AUTHORITY. If a vault concept page states a different number, copy this file, correct it, and pass --thresholds <file> rather than editing the script.",
+
+  "pe_forward_tolerance_pct": 2.0,
+  "pe_hard_fail_pct": 10.0,
+
+  "pullback_band_pct": 3.0,
+  "ma200_safe_zone_pct": 20.0,
+  "ma200_no_add_pct": 40.0,
+  "ma200_trim_pct": 60.0,
+  "ma30_safe_pct": 5.0,
+  "ma30_caution_pct": 10.0,
+
+  "vwap_overextended_pct": 3.0,
+
+  "volume_ratio_institutional": 1.5,
+  "volume_ratio_moderate": 1.0,
+  "turnover_pct_institutional": 1.0,
+  "turnover_pct_quiet": 0.5,
+  "long_lower_wick_pct": 40.0,
+  "small_body_pct": 25.0
+}

@@ -1,0 +1,90 @@
+{
+  "address_map": {
+    "wiki/commands.md": "c-000007",
+    "wiki/concepts/Candle and Volume Confirmation.md": "c-000006",
+    "wiki/concepts/Investment Entry Checklist.md": "c-000002",
+    "wiki/concepts/Moving Averages.md": "c-000004",
+    "wiki/concepts/Price-Earnings Ratio.md": "c-000003",
+    "wiki/concepts/VWAP.md": "c-000005",
+    "wiki/sources/Investment Guide Notes.md": "c-000001"
+  },
+  "description": "Ingest delta tracker. Source payloads are create-only.",
+  "sources": {
+    "1b363a25ff86bdfd285360210c90c5fa75681b6f700ed7f5e2afc82da41f34c8": {
+      "generated_pages": [
+        "wiki/sources/Investment Guide Notes.md",
+        "wiki/concepts/Investment Entry Checklist.md",
+        "wiki/concepts/Price-Earnings Ratio.md",
+        "wiki/concepts/Moving Averages.md",
+        "wiki/concepts/VWAP.md",
+        "wiki/concepts/Candle and Volume Confirmation.md"
+      ],
+      "ingested_at": "2026-08-23",
+      "last_result": "ingested",
+      "name": "Investment guide - 5.pdf",
+      "sha256": "1b363a25ff86bdfd285360210c90c5fa75681b6f700ed7f5e2afc82da41f34c8",
+      "stored_path": ".raw/captured/1b363a25ff86bdfd285360210c90c5fa75681b6f700ed7f5e2afc82da41f34c8.pdf"
+    },
+    "480a42e942c3367096f2a76b55b081620fac35f605bc3cebe3be66276a686021": {
+      "generated_pages": [
+        "wiki/sources/Investment Guide Notes.md",
+        "wiki/concepts/Investment Entry Checklist.md",
+        "wiki/concepts/Price-Earnings Ratio.md",
+        "wiki/concepts/Moving Averages.md",
+        "wiki/concepts/VWAP.md",
+        "wiki/concepts/Candle and Volume Confirmation.md"
+      ],
+      "ingested_at": "2026-08-23",
+      "last_result": "ingested",
+      "name": "Investment guide - 1.pdf",
+      "sha256": "480a42e942c3367096f2a76b55b081620fac35f605bc3cebe3be66276a686021",
+      "stored_path": ".raw/captured/480a42e942c3367096f2a76b55b081620fac35f605bc3cebe3be66276a686021.pdf"
+    },
+    "6cb5d16521a2115438147a87a6349cbcdb8714f6da2bb3c3d387d150611c86e0": {
+      "generated_pages": [
+        "wiki/sources/Investment Guide Notes.md",
+        "wiki/concepts/Investment Entry Checklist.md",
+        "wiki/concepts/Price-Earnings Ratio.md",
+        "wiki/concepts/Moving Averages.md",
+        "wiki/concepts/VWAP.md",
+        "wiki/concepts/Candle and Volume Confirmation.md"
+      ],
+      "ingested_at": "2026-08-23",
+      "last_result": "ingested",
+      "name": "Investment guide - 3.pdf",
+      "sha256": "6cb5d16521a2115438147a87a6349cbcdb8714f6da2bb3c3d387d150611c86e0",
+      "stored_path": ".raw/captured/6cb5d16521a2115438147a87a6349cbcdb8714f6da2bb3c3d387d150611c86e0.pdf"
+    },
+    "7eae6857e638ecf76311e45acae8805ac11751c187a3fdbe472f3190fde3b091": {
+      "generated_pages": [
+        "wiki/sources/Investment Guide Notes.md",
+        "wiki/concepts/Investment Entry Checklist.md",
+        "wiki/concepts/Price-Earnings Ratio.md",
+        "wiki/concepts/Moving Averages.md",
+        "wiki/concepts/VWAP.md",
+        "wiki/concepts/Candle and Volume Confirmation.md"
+      ],
+      "ingested_at": "2026-08-23",
+      "last_result": "ingested",
+      "name": "Investment guide - 2.pdf",
+      "sha256": "7eae6857e638ecf76311e45acae8805ac11751c187a3fdbe472f3190fde3b091",
+      "stored_path": ".raw/captured/7eae6857e638ecf76311e45acae8805ac11751c187a3fdbe472f3190fde3b091.pdf"
+    },
+    "843da239807d15f61ce088e1085a88a9c528789336172af8d808383ac5dd5a0b": {
+      "generated_pages": [
+        "wiki/sources/Investment Guide Notes.md",
+        "wiki/concepts/Investment Entry Checklist.md",
+        "wiki/concepts/Price-Earnings Ratio.md",
+        "wiki/concepts/Moving Averages.md",
+        "wiki/concepts/VWAP.md",
+        "wiki/concepts/Candle and Volume Confirmation.md"
+      ],
+      "ingested_at": "2026-08-23",
+      "last_result": "ingested",
+      "name": "Investment guide - 4.pdf",
+      "sha256": "843da239807d15f61ce088e1085a88a9c528789336172af8d808383ac5dd5a0b",
+      "stored_path": ".raw/captured/843da239807d15f61ce088e1085a88a9c528789336172af8d808383ac5dd5a0b.pdf"
+    }
+  },
+  "version": 1
+}

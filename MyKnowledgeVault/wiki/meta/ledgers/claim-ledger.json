@@ -1,0 +1,94 @@
+{
+  "claims": {
+    "clm-invest-rule-forward-pe": {
+      "assessment": "provisional",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "relation": "supports",
+          "source_id": "src-4ffa3426aed0dd2c8033"
+        },
+        {
+          "relation": "supports",
+          "source_id": "src-b6196199963d600c1d97"
+        }
+      ],
+      "location": {
+        "anchor": null,
+        "path": "wiki/concepts/Price-Earnings Ratio.md"
+      },
+      "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
+      "reviewed_at": null,
+      "risk": "high",
+      "text": "The strategy buys only when Forward P/E <= TTM P/E, treating Forward > TTM as valuation-shock risk."
+    },
+    "clm-invest-rule-institutions": {
+      "assessment": "provisional",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "relation": "supports",
+          "source_id": "src-4ffa3426aed0dd2c8033"
+        },
+        {
+          "relation": "supports",
+          "source_id": "src-850485fc6f4b45ff1fc6"
+        }
+      ],
+      "location": {
+        "anchor": null,
+        "path": "wiki/concepts/Candle and Volume Confirmation.md"
+      },
+      "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
+      "reviewed_at": null,
+      "risk": "high",
+      "text": "The strategy defines institutional involvement as volume ratio above 1.5 with turnover above 1 percent near support, VWAP, or a key MA."
+    },
+    "clm-invest-rule-ma200-trend": {
+      "assessment": "provisional",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "relation": "supports",
+          "source_id": "src-4ffa3426aed0dd2c8033"
+        },
+        {
+          "relation": "supports",
+          "source_id": "src-b42553cee724ae3c3d0c"
+        }
+      ],
+      "location": {
+        "anchor": null,
+        "path": "wiki/concepts/Moving Averages.md"
+      },
+      "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
+      "reviewed_at": null,
+      "risk": "high",
+      "text": "The strategy requires price above MA200, enters on MA10 or MA50 pullbacks, and exits short-term trades on a daily close below MA30."
+    },
+    "clm-invest-rule-vwap": {
+      "assessment": "provisional",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "relation": "supports",
+          "source_id": "src-4ffa3426aed0dd2c8033"
+        },
+        {
+          "relation": "supports",
+          "source_id": "src-bbe5b5c400603c07de68"
+        }
+      ],
+      "location": {
+        "anchor": null,
+        "path": "wiki/concepts/VWAP.md"
+      },
+      "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
+      "reviewed_at": null,
+      "risk": "high",
+      "text": "The strategy treats VWAP as the day's fair-value line and buys only above or on reclaim of VWAP."
+    }
+  },
+  "generated_at": "2026-08-23T06:00:00Z",
+  "schema": "claude-obsidian.claim-ledger.v1"
+}
