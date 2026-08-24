@@ -259,9 +259,17 @@ class VaultRootSeparationTests(unittest.TestCase):
             self.assertEqual(2, missing.returncode)
             self.assertIn("VAULT_NOT_FOUND", missing.stderr)
 
+            # knowledge-brain: the checkout may itself be a workspace whose
+            # config points at an in-repo user vault (MyKnowledgeVault). In
+            # that configuration resolution from the plugin root succeeds via
+            # workspace-config; without it, implicit discovery must still
+            # refuse the plugin installation.
             implicit_plugin = _run_python("wiki-mode.py", "get", cwd=PLUGIN_ROOT)
-            self.assertEqual(2, implicit_plugin.returncode)
-            self.assertIn("PLUGIN_ROOT_IS_NOT_VAULT", implicit_plugin.stderr)
+            if (PLUGIN_ROOT / ".claude-obsidian.json").is_file():
+                self.assertEqual(0, implicit_plugin.returncode, implicit_plugin.stderr)
+            else:
+                self.assertEqual(2, implicit_plugin.returncode)
+                self.assertIn("PLUGIN_ROOT_IS_NOT_VAULT", implicit_plugin.stderr)
 
     def test_vault_state_symlink_escape_fails_before_external_write(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
