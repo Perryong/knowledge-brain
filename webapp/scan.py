@@ -135,6 +135,14 @@ def scan_all(fetch=fetch_all):
         if df is None:
             result["stale"].append(name)
             continue
+        # a series that silently stopped updating weeks ago is worse than a missing
+        # one: it would publish under today's as_of with no stale badge, and if the
+        # last bar happens to be a flip, announce a weeks-old signal as today's.
+        # >5 days clears normal market closures (a Monday holiday leaves ~4 days,
+        # a Christmas-week gap ~5) while still catching genuinely stale feeds.
+        if (date.today() - df.index[-1].date()).days > 5:
+            result["stale"].append(name)
+            continue
         tail = df.tail(CANDLE_BARS)
         r = 4 if float(df["close"].iloc[-1]) < 100 else 2
         result["candles"][name] = {

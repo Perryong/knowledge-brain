@@ -36,8 +36,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SIGNALS: ${{ steps.scan.outputs.new_signals }}
         run: |
+          gh label create signal --color FBCA04 --description "Nightly scanner found a new signal" || true
+          TITLE="Signals $(date -u +%F): $SIGNALS"
           gh issue create \
-            --title "Signals $(date -u +%F): $SIGNALS" \
+            --title "${TITLE:0:256}" \
             --label signal \
             --body "New signals from the nightly scan: $SIGNALS
 

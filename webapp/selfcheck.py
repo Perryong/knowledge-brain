@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Offline gate for the webapp. Run: python3 webapp/selfcheck.py  (exit 0 = pass)."""
 import sys
+import tempfile
+from datetime import date, timedelta
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -13,8 +17,10 @@ def check(name, cond):
         FAILURES.append(name)
 
 
-def fixture(n=400, trend=0.4, seed=7):
-    """Synthetic daily bars: gentle uptrend with noise, volume spikes every 9 bars."""
+def fixture(n=400, trend=0.4, seed=7, end=None):
+    """Synthetic daily bars: gentle uptrend with noise, volume spikes every 9 bars.
+    Ends on `end` (default: today) so scan_all's freshness check sees a live series;
+    pass an older `end` (e.g. 30 days ago) to fabricate a deliberately stale one."""
     rng = np.random.default_rng(seed)
     close = 100 + np.cumsum(rng.normal(trend, 1.2, n))
     close = np.maximum(close, 5.0)
@@ -22,7 +28,7 @@ def fixture(n=400, trend=0.4, seed=7):
     h = np.maximum(o, close) * (1 + np.abs(rng.normal(0, 0.006, n)))
     l = np.minimum(o, close) * (1 - np.abs(rng.normal(0, 0.006, n)))
     v = np.where(np.arange(n) % 9 == 0, 2_000_000, 1_000_000).astype(float)
-    idx = pd.date_range("2024-01-01", periods=n, freq="B")
+    idx = pd.bdate_range(end=pd.Timestamp(end) if end is not None else pd.Timestamp.today().normalize(), periods=n)
     return pd.DataFrame({"open": o, "high": h, "low": l, "close": close, "volume": v}, index=idx)
 
 
@@ -78,9 +84,11 @@ def run_fetch_checks():
           {"NVDA", "XAUUSD", "BTCUSDT", "ARM", "NBIS", "VOO", "TSLA"} <= {e["name"] for e in wl})
     batches = scan.batches([{"code": str(i)} for i in range(45)], 20)
     check("batching: 45 -> 3 chunks", [len(b) for b in batches] == [20, 20, 5])
-    # normalizer is pure: OKX candle rows -> DataFrame (no network)
-    rows = [["1712016000000", "100", "110", "90", "105", "5", "500", "1", "1"],
-            ["1712102400000", "105", "112", "99", "108", "6", "600", "1", "1"]]
+    # normalizer is pure: OKX candle rows -> DataFrame (no network).
+    # Real OKX returns rows newest-first, so the fixture does too: this way the
+    # ascending/values checks actually exercise okx_rows_to_df's .sort_index().
+    rows = [["1712102400000", "105", "112", "99", "108", "6", "600", "1", "1"],
+            ["1712016000000", "100", "110", "90", "105", "5", "500", "1", "1"]]
     df = scan.okx_rows_to_df(rows)
     check("okx normalizer: columns", list(df.columns) == ["open", "high", "low", "close", "volume"])
     check("okx normalizer: ascending", df.index.is_monotonic_increasing)
@@ -107,8 +115,25 @@ def run_scan_checks():
     partial = lambda entries, years=2: {e["name"]: df for e in entries[:10]}
     r2 = scan.scan_all(fetch=partial)
     check("scan: missing names marked stale", len(r2["stale"]) == len(universe) - 10)
-    scan.write_outputs(result)
-    payload = json.loads((scan.DOCS / "data.json").read_text())
+    # a frame whose last bar is ~30 days old must be treated exactly like a failed
+    # fetch: dropped into "stale" with no signals/candles, never published as today's.
+    old_df = fixture(end=date.today() - timedelta(days=30))
+    stale_fetch = lambda entries, years=2: {e["name"]: old_df for e in entries}
+    r3 = scan.scan_all(fetch=stale_fetch)
+    check("scan: stale last bar (30d old) marked stale",
+          set(r3["stale"]) == {e["name"] for e in universe})
+    check("scan: stale tickers carry no signals/candles",
+          all(r3["signals"][n] == {} for n in r3["stale"]) and r3["candles"] == {})
+    # write_outputs()/build_page() must never touch the real docs/ during self-check
+    # (finding 1): redirect scan.DOCS to a throwaway dir for the duration.
+    real_docs = scan.DOCS
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            scan.DOCS = Path(tmp)
+            scan.write_outputs(result)
+            payload = json.loads((scan.DOCS / "data.json").read_text())
+    finally:
+        scan.DOCS = real_docs
     check("payload: keys", set(payload) == {"scan", "backtests", "history", "rules", "universe", "covered"})
     check("payload: universe carries sectors", all({"name", "sector"} <= set(u) for u in payload["universe"]))
     check("payload: covered is the backtested subset",
@@ -124,16 +149,31 @@ def run_page_checks():
     import json
     import scan, page
     df = fixture()
-    result = scan.scan_all(fetch=lambda e, years=2: df)
-    scan.write_outputs(result)
-    out = page.build_page()
-    html = out.read_text()
+    # dict stub, matching what scan_all actually expects ({name: frame}) — the old
+    # `lambda e, years=2: df` stub returned a bare DataFrame, so bars.get(name) was
+    # always None, every ticker went stale, and the page built with zero candles.
+    full = lambda entries, years=2: {e["name"]: df for e in entries}
+    result = scan.scan_all(fetch=full)
+    # sandbox docs/ writes (finding 1) for both scan.write_outputs and page.build_page
+    real_scan_docs, real_page_docs = scan.DOCS, page.DOCS
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            scan.DOCS = page.DOCS = Path(tmp)
+            scan.write_outputs(result)
+            out = page.build_page()
+            html = out.read_text()
+    finally:
+        scan.DOCS, page.DOCS = real_scan_docs, real_page_docs
     check("page: payload injected", "__PAYLOAD__" not in html and '"signals"' in html)
     check("page: signals panel present", 'id="sigmatrix"' in html)
     check("page: rules panel present", 'id="rules"' in html)
     check("page: rule text flows from registry", "A-B-C pullback" in html)
     check("page: sector picker present", 'id="picker"' in html and "optgroup" in html)
     check("page: sector filter present", 'id="sectorfilter"' in html)
+    # these two fail against an empty payload: with the old bare-DataFrame stub every
+    # ticker goes stale, so NVDA never gets a candles entry and its signals dict is {}.
+    check("page: NVDA candle data embedded in html", '"NVDA":{"d":' in html)
+    check("page: NVDA has a populated (non-empty) signal row", '"NVDA":{"ema":{"state":' in html)
 
 
 def main():
