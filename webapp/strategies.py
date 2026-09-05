@@ -53,7 +53,8 @@ _PROFILE_CACHE = {}  # fingerprint -> result; keeps the scan from recomputing pe
 
 
 def volume_profile(h, l, c, v, nodes=False):
-    key = (len(c), str(c.index[-1]), float(c.iloc[-1]), float(v.iloc[-1]), nodes)
+    key = (len(c), str(c.index[-1]), float(c.iloc[-1]), float(v.iloc[-1]),
+           float(c.sum()), float(v.sum()), float(h.sum()), float(l.sum()), nodes)
     hit = _PROFILE_CACHE.get(key)
     if hit is not None:
         return hit
