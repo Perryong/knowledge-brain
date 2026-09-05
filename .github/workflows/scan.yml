@@ -1,0 +1,44 @@
+name: scan
+on:
+  schedule:
+    - cron: "30 22 * * 1-5"   # weekdays after US close (UTC)
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+concurrency:
+  group: scan
+  cancel-in-progress: false
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pandas numpy yfinance requests
+      - name: Self-check (abort if engines broken)
+        run: python3 webapp/selfcheck.py
+      - name: Scan
+        id: scan
+        run: python3 webapp/scan.py --github-output
+      - name: Commit docs
+        run: |
+          git config user.name "strategy-bench-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/data.json docs/index.html
+          git diff --cached --quiet || git commit -m "scan: $(date -u +%F)"
+          git push
+      - name: Open signal issue
+        if: steps.scan.outputs.new_signals != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SIGNALS: ${{ steps.scan.outputs.new_signals }}
+        run: |
+          gh issue create \
+            --title "Signals $(date -u +%F): $SIGNALS" \
+            --label signal \
+            --body "New signals from the nightly scan: $SIGNALS
+
+          Dashboard: https://$(gh repo view --json owner,name -q '.owner.login').github.io/$(gh repo view --json name -q .name)/"
