@@ -550,7 +550,6 @@ from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
-import requests
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
@@ -574,6 +573,7 @@ def okx_rows_to_df(rows):
 
 
 def okx_daily(inst, years=2):
+    import requests          # lazy: keeps the offline selfcheck pandas/numpy-only
     frames, after = [], ""
     cutoff = pd.Timestamp(date.today() - timedelta(days=365 * years))
     for _ in range(12):  # 12 * 100 bars > 3 years
