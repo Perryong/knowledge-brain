@@ -113,3 +113,78 @@ def fetch_bars(entry, years=2):
             print(f"warn: {entry['name']} attempt {attempt + 1}: {e}", file=sys.stderr)
             time.sleep(5 * (attempt + 1))
     return None
+
+
+sys.path.insert(0, str(HERE))
+from strategies import REGISTRY, sig_state, triggers  # noqa: E402
+
+CANDLE_BARS = 260
+TRIGGER_STRATS = ("ema", "smcstruct", "ewabc")
+
+
+def scan_all(fetch=fetch_all):
+    entries = load_universe()
+    bars = fetch(entries)
+    result = {"as_of": date.today().isoformat(), "stale": [], "signals": {}, "candles": {}, "fills": {}}
+    for entry in entries:
+        name = entry["name"]
+        df = bars.get(name)
+        result["signals"][name] = {}
+        if df is None:
+            result["stale"].append(name)
+            continue
+        tail = df.tail(CANDLE_BARS)
+        r = 4 if float(df["close"].iloc[-1]) < 100 else 2
+        result["candles"][name] = {
+            "d": [d.strftime("%Y-%m-%d") for d in tail.index],
+            "o": [round(float(x), r) for x in tail["open"]],
+            "h": [round(float(x), r) for x in tail["high"]],
+            "l": [round(float(x), r) for x in tail["low"]],
+            "c": [round(float(x), r) for x in tail["close"]],
+        }
+        for sname, spec in REGISTRY.items():
+            sig = spec["generate"](df)
+            state, action = sig_state(sig)
+            cell = {"state": state, "action": action}
+            if sname in TRIGGER_STRATS:
+                cell["trigger"] = triggers(sname, df)
+            result["signals"][name][sname] = cell
+    return result
+
+
+def write_outputs(result):
+    DOCS.mkdir(exist_ok=True)
+    backtests = json.loads((HERE / "backtests.json").read_text())
+    rules = {n: {"buy": s["buy"], "sell": s["sell"], "gated": s["gated"]} for n, s in REGISTRY.items()}
+    universe = [{"name": e["name"], "sector": e["sector"]} for e in load_universe()]
+    payload = {"scan": result, "backtests": backtests, "rules": rules,
+               "universe": universe, "covered": sorted(backtests)}
+    (DOCS / "data.json").write_text(json.dumps(payload, separators=(",", ":")))
+    fresh = [f"{t}·{s} {v['action']}"
+             for t, m in result["signals"].items()
+             for s, v in m.items() if v["action"] != "none"]
+    return fresh
+
+
+def main(argv=None):
+    argv = argv if argv is not None else sys.argv[1:]
+    result = scan_all()
+    if result["stale"] and len(result["stale"]) == len(load_universe()):
+        print("error: every fetch failed", file=sys.stderr)
+        return 1
+    fresh = write_outputs(result)
+    from page import build_page  # Task 4
+    build_page()
+    line = ", ".join(fresh)
+    print(f"as_of={result['as_of']} stale={','.join(result['stale']) or '-'} new_signals={line or '-'}")
+    if "--github-output" in argv:
+        import os
+        out = os.environ.get("GITHUB_OUTPUT")
+        if out:
+            with open(out, "a") as f:
+                f.write(f"new_signals={line}\n")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

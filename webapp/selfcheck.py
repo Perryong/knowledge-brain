@@ -87,10 +87,37 @@ def run_fetch_checks():
     check("okx normalizer: values", float(df["close"].iloc[-1]) == 108.0)
 
 
+def run_scan_checks():
+    import json
+    import scan
+    df = fixture()
+    full = lambda entries, years=2: {e["name"]: df for e in entries}   # offline stub
+    result = scan.scan_all(fetch=full)
+    universe = scan.load_universe()
+    check("scan: every universe name present", set(result["signals"]) == {e["name"] for e in universe})
+    check("scan: no stale with stub", result["stale"] == [])
+    nv = result["signals"]["NVDA"]
+    check("scan: 14 strategies per ticker", len(nv) == 14)
+    check("scan: state values", all(v["state"] in ("holding", "flat") for v in nv.values()))
+    check("scan: action values", all(v["action"] in ("BUY", "SELL", "none") for v in nv.values()))
+    check("scan: candles trimmed", len(result["candles"]["NVDA"]["d"]) <= 260)
+    partial = lambda entries, years=2: {e["name"]: df for e in entries[:10]}
+    r2 = scan.scan_all(fetch=partial)
+    check("scan: missing names marked stale", len(r2["stale"]) == len(universe) - 10)
+    scan.write_outputs(result)
+    payload = json.loads((scan.DOCS / "data.json").read_text())
+    check("payload: keys", set(payload) == {"scan", "backtests", "rules", "universe", "covered"})
+    check("payload: universe carries sectors", all({"name", "sector"} <= set(u) for u in payload["universe"]))
+    check("payload: covered is the backtested subset",
+          set(payload["covered"]) == set(payload["backtests"]) and len(payload["covered"]) == 7)
+    check("payload: size under 4MB", len(json.dumps(payload)) < 4_000_000)
+
+
 def main():
     sys.path.insert(0, "webapp")
     run_registry_checks()
     run_fetch_checks()
+    run_scan_checks()
     print("\n%d failure(s)" % len(FAILURES))
     return 1 if FAILURES else 0
 
