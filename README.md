@@ -390,3 +390,14 @@ syntax.
 MIT licensed. See [ATTRIBUTION.md](ATTRIBUTION.md) and
 [CITATION.cff](CITATION.cff).
 # knowledge-brain
+
+## Strategy Bench (webapp/)
+
+Nightly signal scanner + dashboard for the swing strategies backtested in this repo.
+
+- **Dashboard:** https://perryong.github.io/knowledge-brain/ (GitHub Pages from `docs/` — *not live yet; Pages has not been enabled*)
+- **Scan locally:** `pip install pandas numpy yfinance requests` then `python3 webapp/scan.py` and open `docs/index.html`
+- **Cloud:** `.github/workflows/scan.yml` runs weekdays 22:30 UTC (and via Actions → scan → Run workflow), commits `docs/`, and opens a `signal`-labeled issue when any strategy flips BUY/SELL.
+- **Universe:** 60 US names across 11 GICS sectors + Macro, in `webapp/universe.json` — pick one from the sector dropdown. Only the seven originally backtested instruments carry historical metrics; the rest are signals-only.
+- **Rules:** `webapp/strategies.py` is the single source of truth; the page's rules panel renders from it.
+- Not investment advice; signals are end-of-day and fills in the backtests assume no slippage.
