@@ -306,6 +306,13 @@ def run_backtest_tools(root: Path):
     art.mkdir()
     (art / "metrics.csv").write_text("total_return,sharpe,trade_count,win_rate\n0.5,1.2,10,0.4\n")
     (art / "trades.csv").write_text("timestamp,side,holding_days,return_pct\n2025-01-01,sell,90,20.0\n")
+    # Python 3.14 validates every argparse help string eagerly (help % params),
+    # so an unescaped % in a strategy description is a hard error there and a
+    # latent one everywhere else. --help exercises that path on any version.
+    for script in ("bt_prepare.py", "av_fetch.py", "check_rules.py"):   # argparse CLIs
+        h = subprocess.run([sys.executable, str(HERE / script), "--help"], capture_output=True, text=True)
+        if h.returncode != 0:
+            return "backtest-tools", "FAIL", f"{script} --help failed: {h.stderr.strip()[:300]}"
     rep = subprocess.run([sys.executable, str(HERE / "bt_report.py"), str(run_dir)], capture_output=True, text=True)
     grid = subprocess.run([sys.executable, str(HERE / "bt_report.py"), "--grid", str(run_dir)], capture_output=True, text=True)
     ok = (rep.returncode == 0 and "| Total return | +50% |" in rep.stdout and "+20.0%" in rep.stdout

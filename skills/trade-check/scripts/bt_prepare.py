@@ -200,8 +200,12 @@ class SignalEngine:
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("ticker", help="US ticker, e.g. NVDA; or a vibe-trading code (700.HK, BTC-USDT, XAU/USD)")
+    # argparse expands help through `help % params`, so a literal % in a strategy
+    # description (e.g. "within 20%") must be escaped. Python 3.14 validates every
+    # help string eagerly, turning what used to be a latent bug into a hard error.
+    strategy_help = "; ".join(f"{k}: {v}" for k, v in STRATEGIES.items()).replace("%", "%%")
     ap.add_argument("--strategy", choices=sorted(STRATEGIES), default="ema",
-                    help="; ".join(f"{k}: {v}" for k, v in STRATEGIES.items()))
+                    help=strategy_help)
     ap.add_argument("--source", default="auto", help="vibe-trading data source (auto, yfinance, okx, ...)")
     ap.add_argument("--code", help="override the instrument code sent to the data source (e.g. GC=F for gold on yfinance)")
     ap.add_argument("--max-hold-days", type=int, default=0, help="time exit in sessions (126 ≈ 6 months); 0 = none")
