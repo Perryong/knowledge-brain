@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a nightly signal scanner + GitHub Pages dashboard to this repo: run all 14 backtested strategies over a watchlist on fresh daily bars, publish `docs/index.html`, and open a GitHub issue when a strategy flips BUY/SELL.
+**Goal:** Add a nightly signal scanner + GitHub Pages dashboard to this repo: run all 14 strategies over a ~60-name US sector universe on fresh daily bars, publish `docs/index.html` with a sector dropdown, and open a GitHub issue when a strategy flips BUY/SELL.
 
 **Architecture:** A pure-pandas strategy registry (`webapp/strategies.py`) is the single source of truth for rules and rule text. `webapp/scan.py` fetches daily bars (yfinance/OKX, no keys), replays every engine over full history to get current state + today's action, and renders `docs/` from a committed HTML template. A scheduled GitHub Action runs the self-check, the scan, commits `docs/`, and files an issue on new signals.
 
@@ -18,6 +18,9 @@
 - `docs/` is the GitHub Pages root; `docs/index.html` and `docs/data.json` are build artifacts committed by the Action.
 - A failed ticker fetch marks it `stale` and the scan continues; the run fails only if all fetches fail.
 - Do not modify anything under `skills/trade-check/` or `MyKnowledgeVault/`.
+- Universe is ~60 US names across 11 GICS sectors + a Macro group, defined in `webapp/universe.json` with a hardcoded `sector` field (no per-ticker metadata fetch).
+- Equity bars are fetched in batches of ≤20 tickers; the 120-bar volume profile is cached per ticker and shared by the seven profile-using strategies. Nightly runtime target: under 5 minutes.
+- Backtest history exists only for the seven originally backtested instruments (NVDA, XAUUSD, BTCUSDT, ARM, NBIS, VOO, TSLA); every other ticker is signals-only and the page must say so rather than render empty charts.
 - Python files run with the system `python3`; CI installs `pandas numpy yfinance requests`.
 
 ---
@@ -86,6 +89,11 @@ def run_registry_checks():
     check("ema: BUY reported at first flip", sig_state(upto) == ("holding", "BUY"))
     check("ema: triggers dict", isinstance(triggers("ema", df), dict))
     check("smcstruct: triggers dict", isinstance(triggers("smcstruct", df), dict))
+    a1 = REGISTRY["value"]["generate"](df)
+    a2 = REGISTRY["value"]["generate"](df)
+    check("profile cache: repeat call identical", a1.equals(a2))
+    check("profile cache: different data not reused",
+          not REGISTRY["value"]["generate"](fixture(seed=11)).equals(a1))
     check("breakout: no lookahead (truncated history equals prefix)",
           REGISTRY["breakout"]["generate"](df.iloc[:300]).equals(
               REGISTRY["breakout"]["generate"](df).iloc[:300]))
@@ -163,7 +171,14 @@ def _hold(df, entry, exit_, max_hold=MAX_HOLD):
     return pd.Series(sig, index=df.index)
 
 
+_PROFILE_CACHE = {}  # fingerprint -> result; keeps the scan from recomputing per strategy
+
+
 def volume_profile(h, l, c, v, nodes=False):
+    key = (len(c), str(c.index[-1]), float(c.iloc[-1]), float(v.iloc[-1]), nodes)
+    hit = _PROFILE_CACHE.get(key)
+    if hit is not None:
+        return hit
     tp = ((h + l + c) / 3).to_numpy()
     hi, lo, vol, cl = h.to_numpy(), l.to_numpy(), v.to_numpy(), c.to_numpy()
     n = len(tp)
@@ -203,6 +218,9 @@ def volume_profile(h, l, c, v, nodes=False):
     if nodes:
         out += (pd.Series(rc, idx), pd.Series(hc, idx), pd.Series(rl, idx),
                 pd.Series(ll, idx), pd.Series(hl2, idx))
+    if len(_PROFILE_CACHE) > 4:
+        _PROFILE_CACHE.clear()
+    _PROFILE_CACHE[key] = out
     return out
 
 
@@ -427,30 +445,52 @@ git commit -m "feat(webapp): strategy registry with rule text + offline self-che
 
 ---
 
-### Task 2: Watchlist + bar fetchers (`webapp/scan.py`, part 1)
+### Task 2: Sector universe + bar fetchers (`webapp/scan.py`, part 1)
 
 **Files:**
-- Create: `webapp/watchlist.json`
+- Create: `webapp/universe.json`
 - Create: `webapp/scan.py` (fetch layer only)
 - Modify: `webapp/selfcheck.py` (append fetch-layer checks — offline only)
 
 **Interfaces:**
 - Consumes: nothing from Task 1.
-- Produces: `load_watchlist() -> list[dict]` (each `{"name","source","code"}`); `fetch_bars(entry: dict, years: int = 2) -> pd.DataFrame | None` (columns `open,high,low,close,volume`, DatetimeIndex ascending; `None` on failure after 3 retries); `okx_daily(inst: str) -> pd.DataFrame` (paginates OKX `/api/v5/market/history-candles`, bar=1D).
+- Produces: `load_universe() -> list[dict]` (each `{"name","source","code","sector"}`); `fetch_all(entries, years=2) -> dict[str, pd.DataFrame]` (batched yfinance downloads of ≤20 tickers + per-entry OKX calls; missing names simply absent); `fetch_bars(entry, years=2) -> pd.DataFrame | None` (single-ticker path with 3 retries, used by tests and as the batch fallback); `okx_daily(inst, years=2) -> pd.DataFrame`; `okx_rows_to_df(rows) -> pd.DataFrame`.
 
-- [ ] **Step 1: Write `webapp/watchlist.json`**
+- [ ] **Step 1: Generate `webapp/universe.json`**
 
-```json
-[
-  {"name": "NVDA",    "source": "yfinance", "code": "NVDA"},
-  {"name": "XAUUSD",  "source": "yfinance", "code": "GC=F"},
-  {"name": "BTCUSDT", "source": "okx",      "code": "BTC-USDT"},
-  {"name": "ARM",     "source": "yfinance", "code": "ARM"},
-  {"name": "NBIS",    "source": "yfinance", "code": "NBIS"},
-  {"name": "VOO",     "source": "yfinance", "code": "VOO"},
-  {"name": "TSLA",    "source": "yfinance", "code": "TSLA"}
+Run this once and commit the output (the sector map is the source of truth; edit it to grow the universe):
+
+```bash
+mkdir -p webapp && python3 - <<'EOF'
+import json
+from pathlib import Path
+
+SECTORS = {
+    "Information Technology": ["NVDA", "MSFT", "AAPL", "AVGO", "AMD", "ARM", "NBIS"],
+    "Communication Services": ["GOOGL", "META", "NFLX", "DIS", "T"],
+    "Consumer Discretionary": ["AMZN", "TSLA", "HD", "MCD", "NKE"],
+    "Consumer Staples":       ["PG", "KO", "COST", "WMT", "PEP"],
+    "Health Care":            ["LLY", "UNH", "JNJ", "ABBV", "MRK"],
+    "Financials":             ["BRK-B", "JPM", "V", "MA", "BAC"],
+    "Industrials":            ["CAT", "GE", "UBER", "BA", "HON"],
+    "Energy":                 ["XOM", "CVX", "COP", "SLB", "EOG"],
+    "Materials":              ["LIN", "SHW", "FCX", "NEM", "APD"],
+    "Utilities":              ["NEE", "SO", "DUK", "CEG", "AEP"],
+    "Real Estate":            ["PLD", "AMT", "EQIX", "SPG", "O"],
+}
+rows = [{"name": t, "source": "yfinance", "code": t, "sector": s}
+        for s, ts in SECTORS.items() for t in ts]
+rows += [
+    {"name": "XAUUSD",  "source": "yfinance", "code": "GC=F",     "sector": "Macro"},
+    {"name": "BTCUSDT", "source": "okx",      "code": "BTC-USDT", "sector": "Macro"},
+    {"name": "VOO",     "source": "yfinance", "code": "VOO",      "sector": "Macro"},
 ]
+Path("webapp/universe.json").write_text(json.dumps(rows, indent=1))
+print(len(rows), "entries,", len(SECTORS) + 1, "groups")
+EOF
 ```
+
+Expected: `60 entries, 12 groups`.
 
 - [ ] **Step 2: Append failing offline checks to `webapp/selfcheck.py`**
 
@@ -459,10 +499,16 @@ Add below `run_registry_checks()` and call from `main()` before the failure coun
 ```python
 def run_fetch_checks():
     import scan
-    wl = scan.load_watchlist()
-    check("watchlist: 7 entries", len(wl) == 7)
-    check("watchlist: fields", all({"name", "source", "code"} <= set(e) for e in wl))
-    check("watchlist: sources known", all(e["source"] in ("yfinance", "okx") for e in wl))
+    wl = scan.load_universe()
+    check("universe: 60 entries", len(wl) == 60)
+    check("universe: fields", all({"name", "source", "code", "sector"} <= set(e) for e in wl))
+    check("universe: sources known", all(e["source"] in ("yfinance", "okx") for e in wl))
+    check("universe: unique names", len({e["name"] for e in wl}) == len(wl))
+    check("universe: 12 sector groups", len({e["sector"] for e in wl}) == 12)
+    check("universe: originals present",
+          {"NVDA", "XAUUSD", "BTCUSDT", "ARM", "NBIS", "VOO", "TSLA"} <= {e["name"] for e in wl})
+    batches = scan.batches([{"code": str(i)} for i in range(45)], 20)
+    check("batching: 45 -> 3 chunks", [len(b) for b in batches] == [20, 20, 5])
     # normalizer is pure: OKX candle rows -> DataFrame (no network)
     rows = [["1712016000000", "100", "110", "90", "105", "5", "500", "1", "1"],
             ["1712102400000", "105", "112", "99", "108", "6", "600", "1", "1"]]
@@ -500,8 +546,12 @@ REPO = HERE.parent
 DOCS = REPO / "docs"
 
 
-def load_watchlist():
-    return json.loads((HERE / "watchlist.json").read_text())
+def load_universe():
+    return json.loads((HERE / "universe.json").read_text())
+
+
+def batches(seq, size):
+    return [seq[i:i + size] for i in range(0, len(seq), size)]
 
 
 def okx_rows_to_df(rows):
@@ -540,6 +590,45 @@ def yf_daily(code, years=2):
     return df[["open", "high", "low", "close", "volume"]].dropna()
 
 
+def yf_batch(codes, years=2):
+    """One download for many tickers -> {code: OHLCV frame}. Missing codes are omitted."""
+    import yfinance as yf
+    start = (date.today() - timedelta(days=365 * years)).isoformat()
+    raw = yf.download(" ".join(codes), start=start, progress=False,
+                      auto_adjust=True, group_by="ticker", threads=True)
+    out = {}
+    for code in codes:
+        try:
+            df = raw[code] if isinstance(raw.columns, pd.MultiIndex) else raw
+            df = df.copy()
+            df.columns = [str(c).lower() for c in df.columns]
+            df = df[["open", "high", "low", "close", "volume"]].dropna()
+            if len(df) >= 260:
+                out[code] = df
+        except Exception as e:  # noqa: BLE001 — one bad ticker must not sink the batch
+            print(f"warn: batch miss {code}: {e}", file=sys.stderr)
+    return out
+
+
+def fetch_all(entries, years=2):
+    """Batched fetch for the whole universe -> {name: frame}; absent name == stale."""
+    bars = {}
+    yf_entries = [e for e in entries if e["source"] == "yfinance"]
+    for chunk in batches(yf_entries, 20):
+        got = yf_batch([e["code"] for e in chunk], years)
+        for e in chunk:
+            if e["code"] in got:
+                bars[e["name"]] = got[e["code"]]
+        time.sleep(1)
+    for e in entries:
+        if e["name"] in bars:
+            continue
+        df = fetch_bars(e, years)          # retry path for batch misses and OKX
+        if df is not None:
+            bars[e["name"]] = df
+    return bars
+
+
 def fetch_bars(entry, years=2):
     for attempt in range(3):
         try:
@@ -561,14 +650,14 @@ Expected: exit 0, all `ok`.
 
 - [ ] **Step 6: One manual online smoke (not part of selfcheck)**
 
-Run: `python3 -c "import sys; sys.path.insert(0,'webapp'); import scan; d=scan.fetch_bars({'name':'VOO','source':'yfinance','code':'VOO'}); print(len(d), d.index[-1])"`
-Expected: ≥ 260 bars and a recent date. (Skip without failing the task if the network is blocked; CI exercises it nightly.)
+Run: `python3 -c "import sys; sys.path.insert(0,'webapp'); import scan; b=scan.fetch_all(scan.load_universe()[:5]); print(len(b), {k: len(v) for k,v in b.items()})"`
+Expected: 5 frames of ≥ 260 bars each. (Skip without failing the task if the network is blocked; CI exercises it nightly.)
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add webapp/watchlist.json webapp/scan.py webapp/selfcheck.py
-git commit -m "feat(webapp): watchlist + daily-bar fetchers (yfinance/OKX, retry, stale path)"
+git add webapp/universe.json webapp/scan.py webapp/selfcheck.py
+git commit -m "feat(webapp): sector universe + batched daily-bar fetchers (yfinance/OKX)"
 ```
 
 ---
@@ -581,10 +670,10 @@ git commit -m "feat(webapp): watchlist + daily-bar fetchers (yfinance/OKX, retry
 - Create: `webapp/backtests.json` (baked historical grid)
 
 **Interfaces:**
-- Consumes: `REGISTRY`, `sig_state`, `triggers` (Task 1); `load_watchlist`, `fetch_bars` (Task 2).
-- Produces: `scan_all(fetch=fetch_bars) -> dict` returning
-  `{"as_of": "YYYY-MM-DD", "stale": [names], "signals": {tname: {sname: {"state","action","trigger"}}}, "candles": {tname: {"d","o","h","l","c"}}, "fills": {}}`;
-  `write_outputs(result: dict) -> list[str]` (writes `docs/data.json`, returns `["TICKER·strat BUY", ...]` for fresh actions).
+- Consumes: `REGISTRY`, `sig_state`, `triggers` (Task 1); `load_universe`, `fetch_all` (Task 2).
+- Produces: `scan_all(fetch=fetch_all) -> dict` returning
+  `{"as_of": "YYYY-MM-DD", "stale": [names], "signals": {tname: {sname: {"state","action","trigger"}}}, "candles": {tname: {"d","o","h","l","c"}}, "fills": {}}`. `fetch` takes the entry list and returns `{name: DataFrame}` (so batching lives in the fetcher, not the loop).
+- Produces: `write_outputs(result: dict) -> list[str]` — writes `docs/data.json` as `{"scan","backtests","rules","universe","covered"}` where `universe` is `[{"name","sector"}]` and `covered` lists the names that have backtest history; returns `["TICKER·strat BUY", ...]` for fresh actions.
 
 - [ ] **Step 1: Bake `webapp/backtests.json`**
 
@@ -623,21 +712,29 @@ Expected: `ok` with ≥ 90 cells.
 
 ```python
 def run_scan_checks():
+    import json
     import scan
-    from selfcheck import fixture  # same module, already imported names are fine inline
     df = fixture()
-    fake = lambda entry, years=2: df  # offline fetch stub
-    result = scan.scan_all(fetch=fake)
-    check("scan: all tickers present", set(result["signals"]) == {e["name"] for e in scan.load_watchlist()})
+    full = lambda entries, years=2: {e["name"]: df for e in entries}   # offline stub
+    result = scan.scan_all(fetch=full)
+    universe = scan.load_universe()
+    check("scan: every universe name present", set(result["signals"]) == {e["name"] for e in universe})
     check("scan: no stale with stub", result["stale"] == [])
     nv = result["signals"]["NVDA"]
     check("scan: 14 strategies per ticker", len(nv) == 14)
     check("scan: state values", all(v["state"] in ("holding", "flat") for v in nv.values()))
     check("scan: action values", all(v["action"] in ("BUY", "SELL", "none") for v in nv.values()))
-    check("scan: candles trimmed", len(result["candles"]["NVDA"]["d"]) <= 500)
-    none_fetch = lambda entry, years=2: None
-    result2 = scan.scan_all(fetch=none_fetch)
-    check("scan: all-stale marks every ticker", len(result2["stale"]) == 7)
+    check("scan: candles trimmed", len(result["candles"]["NVDA"]["d"]) <= 260)
+    partial = lambda entries, years=2: {e["name"]: df for e in entries[:10]}
+    r2 = scan.scan_all(fetch=partial)
+    check("scan: missing names marked stale", len(r2["stale"]) == len(universe) - 10)
+    scan.write_outputs(result)
+    payload = json.loads((scan.DOCS / "data.json").read_text())
+    check("payload: keys", set(payload) == {"scan", "backtests", "rules", "universe", "covered"})
+    check("payload: universe carries sectors", all({"name", "sector"} <= set(u) for u in payload["universe"]))
+    check("payload: covered is the backtested subset",
+          set(payload["covered"]) == set(payload["backtests"]) and len(payload["covered"]) == 7)
+    check("payload: size under 4MB", len(json.dumps(payload)) < 4_000_000)
 ```
 
 (If importing `fixture` from within the module is awkward, move `fixture()` to module top level — it already is.)
@@ -653,15 +750,17 @@ Expected: FAIL with `AttributeError: module 'scan' has no attribute 'scan_all'`.
 sys.path.insert(0, str(HERE))
 from strategies import REGISTRY, sig_state, triggers  # noqa: E402
 
-CANDLE_BARS = 500
+CANDLE_BARS = 260
 TRIGGER_STRATS = ("ema", "smcstruct", "ewabc")
 
 
-def scan_all(fetch=fetch_bars):
+def scan_all(fetch=fetch_all):
+    entries = load_universe()
+    bars = fetch(entries)
     result = {"as_of": date.today().isoformat(), "stale": [], "signals": {}, "candles": {}, "fills": {}}
-    for entry in load_watchlist():
+    for entry in entries:
         name = entry["name"]
-        df = fetch(entry)
+        df = bars.get(name)
         result["signals"][name] = {}
         if df is None:
             result["stale"].append(name)
@@ -689,7 +788,9 @@ def write_outputs(result):
     DOCS.mkdir(exist_ok=True)
     backtests = json.loads((HERE / "backtests.json").read_text())
     rules = {n: {"buy": s["buy"], "sell": s["sell"], "gated": s["gated"]} for n, s in REGISTRY.items()}
-    payload = {"scan": result, "backtests": backtests, "rules": rules}
+    universe = [{"name": e["name"], "sector": e["sector"]} for e in load_universe()]
+    payload = {"scan": result, "backtests": backtests, "rules": rules,
+               "universe": universe, "covered": sorted(backtests)}
     (DOCS / "data.json").write_text(json.dumps(payload, separators=(",", ":")))
     fresh = [f"{t}·{s} {v['action']}"
              for t, m in result["signals"].items()
@@ -700,7 +801,7 @@ def write_outputs(result):
 def main(argv=None):
     argv = argv if argv is not None else sys.argv[1:]
     result = scan_all()
-    if result["stale"] and len(result["stale"]) == len(load_watchlist()):
+    if result["stale"] and len(result["stale"]) == len(load_universe()):
         print("error: every fetch failed", file=sys.stderr)
         return 1
     fresh = write_outputs(result)
@@ -767,14 +868,18 @@ EOF
 
 If the scratchpad file no longer exists, STOP and report — the template must come from the built dashboard, not be rewritten from scratch in this task.
 
-- [ ] **Step 2: Add the adapter + new panels to the template**
+- [ ] **Step 2: Add the adapter, sector picker, and new panels to the template**
 
-Insert into `webapp/template.html` immediately after the `const DATA = …` line: an `adapt(payload)` function that maps the new payload onto the page's existing `DATA` shape, plus two new panels. Add this `<div class="panel">` block as the FIRST panel in the body (before the equity panel):
+**2a — panels.** Insert this as the FIRST panel in the body (before the equity panel):
 
 ```html
 <div class="panel">
   <h2>Today's signals · <span id="asof"></span></h2>
   <div id="fresh" class="legend"></div>
+  <div class="chips" style="margin:10px 0 6px">
+    <label class="sub" for="sectorfilter">Sector</label>
+    <select id="sectorfilter" onchange="render()"></select>
+  </div>
   <div class="scroll"><table id="sigmatrix"></table></div>
 </div>
 <div class="panel">
@@ -783,18 +888,55 @@ Insert into `webapp/template.html` immediately after the `const DATA = …` line
 </div>
 ```
 
-And in the script (after `adapt` is defined), the renderers, called from `render()`:
+**2b — instrument picker.** Replace the body's `<div class="chips" id="tickers">…</div>` control with:
+
+```html
+<div class="chips">
+  <select id="picker" aria-label="Instrument" onchange="setTicker(this.value)"></select>
+  <span id="favchips"></span>
+</div>
+```
+
+Add matching CSS beside the existing `.chip` rules:
+
+```css
+select{font:600 12.5px Archivo,system-ui,sans-serif;color:var(--ink);background:var(--chip);
+  border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+```
+
+**2c — script.** Define `adapt` (already referenced by the seeded `const DATA` line) and the new renderers, and replace the old `tickersBar()` body:
 
 ```js
+const FAVOURITES = ["NVDA", "XAUUSD", "BTCUSDT", "ARM", "NBIS", "VOO", "TSLA"];
 function adapt(p){
-  // page's historical panels read: tickers, strategies, metrics, curves, trades, ohlc, fills
-  const bt = p.backtests;
-  return { tickers: Object.keys(bt), strategies: Object.keys(p.rules), metrics: bt,
-           curves: {}, trades: {}, fills: {},
-           ohlc: p.scan.candles, scan: p.scan, rules: p.rules };
+  // historical panels read: tickers, strategies, metrics, curves, trades, ohlc, fills
+  return { tickers: p.universe.map(u => u.name), strategies: Object.keys(p.rules),
+           metrics: p.backtests, curves: {}, trades: {}, fills: {},
+           ohlc: p.scan.candles, scan: p.scan, rules: p.rules,
+           universe: p.universe, covered: p.covered };
 }
+function sectorsOf(){
+  const m = {};
+  for (const u of DATA.universe) (m[u.sector] = m[u.sector] || []).push(u.name);
+  return m;
+}
+function tickersBar(){                      // replaces the old chip-row renderer
+  const groups = sectorsOf();
+  document.getElementById("picker").innerHTML = Object.keys(groups).map(s =>
+    `<optgroup label="${s}">` + groups[s].map(n =>
+      `<option value="${n}" ${n===ticker?"selected":""}>${n}</option>`).join("") + `</optgroup>`).join("");
+  document.getElementById("favchips").innerHTML = FAVOURITES.filter(n => DATA.tickers.includes(n))
+    .map(n => `<button class="chip ${n===ticker?"on":""}" onclick="setTicker('${n}')">${n}</button>`).join("");
+  const sel = document.getElementById("sectorfilter");
+  if (!sel.options.length)
+    sel.innerHTML = `<option value="ALL">All sectors</option>` +
+      Object.keys(groups).map(s => `<option value="${s}">${s}</option>`).join("");
+}
+function covered(t){ return (DATA.covered || []).includes(t); }
 function signalsPanel(){
-  const s = DATA.scan; document.getElementById("asof").textContent =
+  const s = DATA.scan;
+  document.getElementById("asof").textContent =
     s.as_of + (s.stale.length ? ` · stale: ${s.stale.join(", ")}` : "");
   const fresh = [];
   for (const t in s.signals) for (const k in s.signals[t]){
@@ -802,12 +944,14 @@ function signalsPanel(){
     if (v.action !== "none") fresh.push(`<span><b class="${v.action==="BUY"?"pos":"neg"}">${v.action}</b> ${t} · ${k}</span>`);
   }
   document.getElementById("fresh").innerHTML = fresh.join("") || "<span>No new signals on the latest bar.</span>";
+  const pick = document.getElementById("sectorfilter").value || "ALL";
+  const rows = DATA.universe.filter(u => pick === "ALL" || u.sector === pick).map(u => u.name);
   const strats = DATA.strategies;
   document.getElementById("sigmatrix").innerHTML =
     `<tr><th>Ticker</th>${strats.map(x=>`<th>${x}</th>`).join("")}</tr>` +
-    Object.keys(s.signals).map(t => `<tr><td>${t}</td>` + strats.map(k => {
-      const v = s.signals[t][k];
-      if (!v) return "<td>–</td>";
+    rows.map(t => `<tr><td>${t}</td>` + strats.map(k => {
+      const v = (s.signals[t]||{})[k];
+      if (!v) return `<td style="color:var(--ink-3)">–</td>`;
       const mark = v.action !== "none" ? ` <b class="${v.action==="BUY"?"pos":"neg"}">${v.action}</b>` : "";
       return `<td>${v.state === "holding" ? "●" : "○"}${mark}</td>`;
     }).join("") + "</tr>").join("");
@@ -821,7 +965,24 @@ function rulesPanel(){
 }
 ```
 
-Wire `signalsPanel(); rulesPanel();` as the first calls inside `render()`. Panels whose data is absent in the new payload (equity curves, fills, trade log) must render their empty-state text, not throw: guard each with `if (!… ) { el.innerHTML = "<i>historical view — see backtests</i>"; return; }` style checks where the existing code would index into missing keys.
+**2d — guard the historical panels.** `tiles()`, `chart()`, `gridTable()`, `heat()`, and `tradesTable()` index into data that exists only for the seven backtested names. Wrap each body's start with the coverage guard so a signals-only ticker renders a note instead of throwing:
+
+```js
+  if (!covered(ticker)) {
+    $("tiles").innerHTML = `<div class="tile"><div class="k">Backtest history</div>` +
+      `<div class="v">–</div><div class="d">${ticker} is signals-only; no backtest was run for it.</div></div>`;
+    return;   // same shape in chart/gridTable/tradesTable, writing to their own element ids
+  }
+```
+
+For `chart()` and `tradesTable()`, write `<i>No backtest history for ${ticker} — signals only.</i>` into `#chartwrap` / `#trades` and return. `heat()` always renders (it is universe-wide over `DATA.metrics`, which only holds covered names).
+
+Wire the new renderers first in `render()`:
+
+```js
+function render(){ tickersBar(); signalsPanel(); rulesPanel(); tiles(); legend(); chart();
+                   pcHeader(); priceChart(); gridTable(); heat(); tradesTable(); }
+```
 
 - [ ] **Step 3: Write `webapp/page.py`**
 
@@ -859,6 +1020,8 @@ def run_page_checks():
     check("page: signals panel present", 'id="sigmatrix"' in html)
     check("page: rules panel present", 'id="rules"' in html)
     check("page: rule text flows from registry", "A-B-C pullback" in html)
+    check("page: sector picker present", 'id="picker"' in html and "optgroup" in html)
+    check("page: sector filter present", 'id="sectorfilter"' in html)
 ```
 
 Call `run_scan_checks()` and `run_page_checks()` from `main()`.
@@ -872,7 +1035,7 @@ Expected: exit 0. Also run the full local path once: `python3 webapp/scan.py` (o
 
 ```bash
 git add webapp/template.html webapp/page.py webapp/selfcheck.py docs/data.json docs/index.html
-git commit -m "feat(webapp): page builder — today's signals matrix + strategy rules panels"
+git commit -m "feat(webapp): page builder — sector picker, signals matrix, strategy rules"
 ```
 
 ---
@@ -970,6 +1133,7 @@ Nightly signal scanner + dashboard for the swing strategies backtested in this r
 - **Dashboard:** https://perryong.github.io/knowledge-brain/ (GitHub Pages from `docs/`)
 - **Scan locally:** `pip install pandas numpy yfinance requests` then `python3 webapp/scan.py` and open `docs/index.html`
 - **Cloud:** `.github/workflows/scan.yml` runs weekdays 22:30 UTC (and via Actions → scan → Run workflow), commits `docs/`, and opens a `signal`-labeled issue when any strategy flips BUY/SELL.
+- **Universe:** ~60 US names across the 11 GICS sectors + Macro, in `webapp/universe.json` — pick one from the sector dropdown. Only the seven originally backtested instruments carry historical metrics; the rest are signals-only.
 - **Rules:** `webapp/strategies.py` is the single source of truth; the page's rules panel renders from it.
 - Not investment advice; signals are end-of-day and fills in the backtests assume no slippage.
 ```
@@ -1005,6 +1169,6 @@ Run: `git status --short` — expected clean; `python3 webapp/selfcheck.py` — 
 
 ## Self-review notes
 
-- Spec coverage: layout → Tasks 1–4; scan semantics → Tasks 1–3; page additions → Task 4; Action + issue → Task 5; running instructions + Pages + public flip → Task 6; stale path → Tasks 2–3; selfcheck gate → every task. Out-of-scope items untouched.
+- Spec coverage: layout → Tasks 1–4; scan semantics → Tasks 1–3; sector universe + batching + profile cache → Tasks 1–3; page additions incl. sector dropdown and partial-coverage notes → Task 4; Action + issue → Task 5; running instructions + Pages + public flip → Task 6; stale path → Tasks 2–3; selfcheck gate → every task. Out-of-scope items untouched.
 - Type consistency: `REGISTRY`/`sig_state`/`triggers` names match across Tasks 1, 3; `scan_all(fetch=...)`/`write_outputs`/`build_page` match across Tasks 3–5; payload keys `{"scan","backtests","rules"}` match Task 3 ↔ Task 4.
 - Known session dependency: Task 4 Step 1 copies the template from this session's scratchpad path; if absent, the executor stops and reports (explicitly instructed).
