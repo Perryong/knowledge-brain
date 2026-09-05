@@ -1,126 +1,205 @@
 {
-  "generated_at": "2026-08-23T06:00:00Z",
-  "schema": "claude-obsidian.source-ledger.v1",
-  "sources": {
-    "src-4ffa3426aed0dd2c8033": {
-      "authority": "primary",
-      "content_kind": "document",
-      "content_sha256": "480a42e942c3367096f2a76b55b081620fac35f605bc3cebe3be66276a686021",
-      "independence_key": "perry-investment-guide-notes",
-      "ingested_at": "2026-08-23",
-      "notes": "Covers: Master 5-point entry checklist. Author's own handwritten/annotated strategy notes; primary for what the strategy is, not evidence of performance.",
-      "origin": {
-        "kind": "file",
-        "locator": ".raw/captured/480a42e942c3367096f2a76b55b081620fac35f605bc3cebe3be66276a686021.pdf"
-      },
-      "pages": [
-        "wiki/sources/Investment Guide Notes.md",
-        "wiki/concepts/Investment Entry Checklist.md",
-        "wiki/concepts/Price-Earnings Ratio.md",
-        "wiki/concepts/Moving Averages.md",
-        "wiki/concepts/VWAP.md",
-        "wiki/concepts/Candle and Volume Confirmation.md"
-      ],
-      "refresh_due": "2027-08-23",
-      "retrieved_at": "2026-08-23",
-      "review_status": "active",
-      "title": "Investment guide - 1.pdf"
-    },
-    "src-850485fc6f4b45ff1fc6": {
-      "authority": "primary",
-      "content_kind": "document",
-      "content_sha256": "1b363a25ff86bdfd285360210c90c5fa75681b6f700ed7f5e2afc82da41f34c8",
-      "independence_key": "perry-investment-guide-notes",
-      "ingested_at": "2026-08-23",
-      "notes": "Covers: Candles + volume, institution involvement. Author's own handwritten/annotated strategy notes; primary for what the strategy is, not evidence of performance.",
-      "origin": {
-        "kind": "file",
-        "locator": ".raw/captured/1b363a25ff86bdfd285360210c90c5fa75681b6f700ed7f5e2afc82da41f34c8.pdf"
-      },
-      "pages": [
-        "wiki/sources/Investment Guide Notes.md",
-        "wiki/concepts/Investment Entry Checklist.md",
-        "wiki/concepts/Price-Earnings Ratio.md",
-        "wiki/concepts/Moving Averages.md",
-        "wiki/concepts/VWAP.md",
-        "wiki/concepts/Candle and Volume Confirmation.md"
-      ],
-      "refresh_due": "2027-08-23",
-      "retrieved_at": "2026-08-23",
-      "review_status": "active",
-      "title": "Investment guide - 5.pdf"
-    },
-    "src-b42553cee724ae3c3d0c": {
-      "authority": "primary",
-      "content_kind": "document",
-      "content_sha256": "6cb5d16521a2115438147a87a6349cbcdb8714f6da2bb3c3d387d150611c86e0",
-      "independence_key": "perry-investment-guide-notes",
-      "ingested_at": "2026-08-23",
-      "notes": "Covers: Moving averages, entries/exits, double bottom. Author's own handwritten/annotated strategy notes; primary for what the strategy is, not evidence of performance.",
-      "origin": {
-        "kind": "file",
-        "locator": ".raw/captured/6cb5d16521a2115438147a87a6349cbcdb8714f6da2bb3c3d387d150611c86e0.pdf"
-      },
-      "pages": [
-        "wiki/sources/Investment Guide Notes.md",
-        "wiki/concepts/Investment Entry Checklist.md",
-        "wiki/concepts/Price-Earnings Ratio.md",
-        "wiki/concepts/Moving Averages.md",
-        "wiki/concepts/VWAP.md",
-        "wiki/concepts/Candle and Volume Confirmation.md"
-      ],
-      "refresh_due": "2027-08-23",
-      "retrieved_at": "2026-08-23",
-      "review_status": "active",
-      "title": "Investment guide - 3.pdf"
-    },
-    "src-b6196199963d600c1d97": {
-      "authority": "primary",
-      "content_kind": "document",
-      "content_sha256": "7eae6857e638ecf76311e45acae8805ac11751c187a3fdbe472f3190fde3b091",
-      "independence_key": "perry-investment-guide-notes",
-      "ingested_at": "2026-08-23",
-      "notes": "Covers: Price-Earnings ratio (TTM vs Forward). Author's own handwritten/annotated strategy notes; primary for what the strategy is, not evidence of performance.",
-      "origin": {
-        "kind": "file",
-        "locator": ".raw/captured/7eae6857e638ecf76311e45acae8805ac11751c187a3fdbe472f3190fde3b091.pdf"
-      },
-      "pages": [
-        "wiki/sources/Investment Guide Notes.md",
-        "wiki/concepts/Investment Entry Checklist.md",
-        "wiki/concepts/Price-Earnings Ratio.md",
-        "wiki/concepts/Moving Averages.md",
-        "wiki/concepts/VWAP.md",
-        "wiki/concepts/Candle and Volume Confirmation.md"
-      ],
-      "refresh_due": "2027-08-23",
-      "retrieved_at": "2026-08-23",
-      "review_status": "active",
-      "title": "Investment guide - 2.pdf"
-    },
-    "src-bbe5b5c400603c07de68": {
-      "authority": "primary",
-      "content_kind": "document",
-      "content_sha256": "843da239807d15f61ce088e1085a88a9c528789336172af8d808383ac5dd5a0b",
-      "independence_key": "perry-investment-guide-notes",
-      "ingested_at": "2026-08-23",
-      "notes": "Covers: Volume-Weighted Average Price. Author's own handwritten/annotated strategy notes; primary for what the strategy is, not evidence of performance.",
-      "origin": {
-        "kind": "file",
-        "locator": ".raw/captured/843da239807d15f61ce088e1085a88a9c528789336172af8d808383ac5dd5a0b.pdf"
-      },
-      "pages": [
-        "wiki/sources/Investment Guide Notes.md",
-        "wiki/concepts/Investment Entry Checklist.md",
-        "wiki/concepts/Price-Earnings Ratio.md",
-        "wiki/concepts/Moving Averages.md",
-        "wiki/concepts/VWAP.md",
-        "wiki/concepts/Candle and Volume Confirmation.md"
-      ],
-      "refresh_due": "2027-08-23",
-      "retrieved_at": "2026-08-23",
-      "review_status": "active",
-      "title": "Investment guide - 4.pdf"
-    }
+ "generated_at": "2026-08-25T17:10:00Z",
+ "schema": "claude-obsidian.source-ledger.v1",
+ "sources": {
+  "src-2a0180bd4ce83399c23d": {
+   "authority": "secondary",
+   "content_kind": "document",
+   "content_sha256": "e615ae69a927f70c9e19e3869e4ea5f13c908f9b0530af3f547d16f3aac10874",
+   "independence_key": "the-orderflow-(cryptosoulz)",
+   "ingested_at": "2026-08-25",
+   "notes": "Promotional order-flow primer with kiyotaka.ai referral link, undated (~2025). Primary for the guide's claims only; claims are illustrated, not measured.",
+   "origin": {
+    "kind": "file",
+    "locator": ".raw/captured/e615ae69a927f70c9e19e3869e4ea5f13c908f9b0530af3f547d16f3aac10874.pdf"
+   },
+   "pages": [
+    "wiki/sources/CryptoSoulz Orderflow Guide.md",
+    "wiki/research/Options Income and Orderflow Research.md"
+   ],
+   "refresh_due": "2027-08-25",
+   "retrieved_at": "2026-08-25",
+   "review_status": "active",
+   "title": "THE ORDERFLOW (CryptoSoulz)"
+  },
+  "src-4f44ce859b49fe84e27a": {
+   "authority": "secondary",
+   "content_kind": "document",
+   "content_sha256": "1cb904928f823266fbfa14507df3d7ddac9304925d4d3ffb97634bc9830134d2",
+   "independence_key": "tastylive-options-strategy-guide-(tt1469)",
+   "ingested_at": "2026-08-25",
+   "notes": "Educational/promotional options-strategy reference by tastylive (2023-06-27). Primary for what the tastylive approach IS; no evidence of performance.",
+   "origin": {
+    "kind": "file",
+    "locator": ".raw/captured/1cb904928f823266fbfa14507df3d7ddac9304925d4d3ffb97634bc9830134d2.pdf"
+   },
+   "pages": [
+    "wiki/sources/Tastylive Options Strategy Guide.md",
+    "wiki/research/Options Income and Orderflow Research.md"
+   ],
+   "refresh_due": "2027-08-25",
+   "retrieved_at": "2026-08-25",
+   "review_status": "active",
+   "title": "Tastylive Options Strategy Guide (TT1469)"
+  },
+  "src-4ffa3426aed0dd2c8033": {
+   "authority": "primary",
+   "content_kind": "document",
+   "content_sha256": "480a42e942c3367096f2a76b55b081620fac35f605bc3cebe3be66276a686021",
+   "independence_key": "perry-investment-guide-notes",
+   "ingested_at": "2026-08-23",
+   "notes": "Covers: Master 5-point entry checklist. Author's own handwritten/annotated strategy notes; primary for what the strategy is, not evidence of performance.",
+   "origin": {
+    "kind": "file",
+    "locator": ".raw/captured/480a42e942c3367096f2a76b55b081620fac35f605bc3cebe3be66276a686021.pdf"
+   },
+   "pages": [
+    "wiki/sources/Investment Guide Notes.md",
+    "wiki/concepts/Investment Entry Checklist.md",
+    "wiki/concepts/Price-Earnings Ratio.md",
+    "wiki/concepts/Moving Averages.md",
+    "wiki/concepts/VWAP.md",
+    "wiki/concepts/Candle and Volume Confirmation.md"
+   ],
+   "refresh_due": "2027-08-23",
+   "retrieved_at": "2026-08-23",
+   "review_status": "active",
+   "title": "Investment guide - 1.pdf"
+  },
+  "src-850485fc6f4b45ff1fc6": {
+   "authority": "primary",
+   "content_kind": "document",
+   "content_sha256": "1b363a25ff86bdfd285360210c90c5fa75681b6f700ed7f5e2afc82da41f34c8",
+   "independence_key": "perry-investment-guide-notes",
+   "ingested_at": "2026-08-23",
+   "notes": "Covers: Candles + volume, institution involvement. Author's own handwritten/annotated strategy notes; primary for what the strategy is, not evidence of performance.",
+   "origin": {
+    "kind": "file",
+    "locator": ".raw/captured/1b363a25ff86bdfd285360210c90c5fa75681b6f700ed7f5e2afc82da41f34c8.pdf"
+   },
+   "pages": [
+    "wiki/sources/Investment Guide Notes.md",
+    "wiki/concepts/Investment Entry Checklist.md",
+    "wiki/concepts/Price-Earnings Ratio.md",
+    "wiki/concepts/Moving Averages.md",
+    "wiki/concepts/VWAP.md",
+    "wiki/concepts/Candle and Volume Confirmation.md"
+   ],
+   "refresh_due": "2027-08-23",
+   "retrieved_at": "2026-08-23",
+   "review_status": "active",
+   "title": "Investment guide - 5.pdf"
+  },
+  "src-aab41cc43a5495e6d106": {
+   "authority": "secondary",
+   "content_kind": "document",
+   "content_sha256": "a2a02a35545890d6f9eaaecb0a967a0f951c8d8c895c6ed990ddb467743e92ee",
+   "independence_key": "cboe-commissioned-putwrite-research",
+   "ingested_at": "2026-08-25",
+   "notes": "Academic author (U. Illinois) but commissioned/hosted by Cboe, which sells the products studied. PUT index mechanics differ from the tastylive recipe (ATM monthly, no management rules).",
+   "origin": {
+    "kind": "file",
+    "locator": ".raw/captured/a2a02a35545890d6f9eaaecb0a967a0f951c8d8c895c6ed990ddb467743e92ee.pdf"
+   },
+   "pages": [
+    "wiki/sources/Bondarenko Put-Writing Study.md",
+    "wiki/research/Options Income and Orderflow Research.md"
+   ],
+   "refresh_due": "2027-08-25",
+   "retrieved_at": "2026-08-25",
+   "review_status": "active",
+   "title": "Historical Performance of Put-Writing Strategies (Bondarenko, 2019)"
+  },
+  "src-b42553cee724ae3c3d0c": {
+   "authority": "primary",
+   "content_kind": "document",
+   "content_sha256": "6cb5d16521a2115438147a87a6349cbcdb8714f6da2bb3c3d387d150611c86e0",
+   "independence_key": "perry-investment-guide-notes",
+   "ingested_at": "2026-08-23",
+   "notes": "Covers: Moving averages, entries/exits, double bottom. Author's own handwritten/annotated strategy notes; primary for what the strategy is, not evidence of performance.",
+   "origin": {
+    "kind": "file",
+    "locator": ".raw/captured/6cb5d16521a2115438147a87a6349cbcdb8714f6da2bb3c3d387d150611c86e0.pdf"
+   },
+   "pages": [
+    "wiki/sources/Investment Guide Notes.md",
+    "wiki/concepts/Investment Entry Checklist.md",
+    "wiki/concepts/Price-Earnings Ratio.md",
+    "wiki/concepts/Moving Averages.md",
+    "wiki/concepts/VWAP.md",
+    "wiki/concepts/Candle and Volume Confirmation.md"
+   ],
+   "refresh_due": "2027-08-23",
+   "retrieved_at": "2026-08-23",
+   "review_status": "active",
+   "title": "Investment guide - 3.pdf"
+  },
+  "src-b6196199963d600c1d97": {
+   "authority": "primary",
+   "content_kind": "document",
+   "content_sha256": "7eae6857e638ecf76311e45acae8805ac11751c187a3fdbe472f3190fde3b091",
+   "independence_key": "perry-investment-guide-notes",
+   "ingested_at": "2026-08-23",
+   "notes": "Covers: Price-Earnings ratio (TTM vs Forward). Author's own handwritten/annotated strategy notes; primary for what the strategy is, not evidence of performance.",
+   "origin": {
+    "kind": "file",
+    "locator": ".raw/captured/7eae6857e638ecf76311e45acae8805ac11751c187a3fdbe472f3190fde3b091.pdf"
+   },
+   "pages": [
+    "wiki/sources/Investment Guide Notes.md",
+    "wiki/concepts/Investment Entry Checklist.md",
+    "wiki/concepts/Price-Earnings Ratio.md",
+    "wiki/concepts/Moving Averages.md",
+    "wiki/concepts/VWAP.md",
+    "wiki/concepts/Candle and Volume Confirmation.md"
+   ],
+   "refresh_due": "2027-08-23",
+   "retrieved_at": "2026-08-23",
+   "review_status": "active",
+   "title": "Investment guide - 2.pdf"
+  },
+  "src-bbe5b5c400603c07de68": {
+   "authority": "primary",
+   "content_kind": "document",
+   "content_sha256": "843da239807d15f61ce088e1085a88a9c528789336172af8d808383ac5dd5a0b",
+   "independence_key": "perry-investment-guide-notes",
+   "ingested_at": "2026-08-23",
+   "notes": "Covers: Volume-Weighted Average Price. Author's own handwritten/annotated strategy notes; primary for what the strategy is, not evidence of performance.",
+   "origin": {
+    "kind": "file",
+    "locator": ".raw/captured/843da239807d15f61ce088e1085a88a9c528789336172af8d808383ac5dd5a0b.pdf"
+   },
+   "pages": [
+    "wiki/sources/Investment Guide Notes.md",
+    "wiki/concepts/Investment Entry Checklist.md",
+    "wiki/concepts/Price-Earnings Ratio.md",
+    "wiki/concepts/Moving Averages.md",
+    "wiki/concepts/VWAP.md",
+    "wiki/concepts/Candle and Volume Confirmation.md"
+   ],
+   "refresh_due": "2027-08-23",
+   "retrieved_at": "2026-08-23",
+   "review_status": "active",
+   "title": "Investment guide - 4.pdf"
+  },
+  "src-fdab70efa35b3e9d0c74": {
+   "authority": "community",
+   "content_kind": "webpage",
+   "content_sha256": null,
+   "independence_key": "sweetvolatility-blog",
+   "ingested_at": "2026-08-25",
+   "notes": "Retail trader's live test of modified tastytrade mechanics (~100 DTE, 35% target); ~70% win rate but negative P&L over ~4 months. Not captured; summary only. Low authority; mechanics modified from the guide's.",
+   "origin": {
+    "kind": "url",
+    "locator": "https://sweetvolatility.com/tasty-trade-experiments/"
+   },
+   "pages": [
+    "wiki/research/Options Income and Orderflow Research.md"
+   ],
+   "refresh_due": "2027-08-25",
+   "retrieved_at": "2026-08-25",
+   "review_status": "active",
+   "title": "I Tested the Tasty Trade Method & Why I Stopped Trading It"
   }
+ }
 }

@@ -3,7 +3,7 @@ type: meta
 title: Wiki Log
 status: evergreen
 created: 2026-08-23
-updated: 2026-08-24
+updated: 2026-08-26
 tags:
   - meta
   - log
@@ -12,6 +12,27 @@ tags:
 # Wiki Log
 
 Newest completed operations appear first.
+
+- 2026-08-26 — save — Filed [[Orderflow Strategy Backtest Grid]]: the full
+  7-ticker comparison of the four orderflow-guide strategies vs EMA12/EMA21,
+  with drawdowns and per-strategy assessment.
+
+- 2026-08-26 — autoresearch — Canonical merge from the trading-guide dossier:
+  created concept pages [[Options Premium Selling]],
+  [[Options Strategy Families]], [[Volume and Market Profile]], and
+  [[Order Book and Liquidations]], each carrying its evidence status.
+
+- 2026-08-26 — autoresearch — Approved-egress web round on the trading-guide
+  dossier: captured [[Bondarenko Put-Writing Study]] (PUT index, 32 years),
+  recorded a cautionary retail trial, found no peer-reviewed volume-profile
+  evidence; premium-selling performance claim upgraded to provisional in
+  [[Options Income and Orderflow Research]].
+
+- 2026-08-26 — autoresearch — Captured and filed two user-supplied guides
+  (tastylive TT1469 options strategies; CryptoSoulz THE ORDERFLOW) as
+  [[Tastylive Options Strategy Guide]] and [[CryptoSoulz Orderflow Guide]],
+  with [[Options Income and Orderflow Research]] recording payoff-formula
+  verification (live NVDA chain) and the order-flow backtest verdicts.
 
 - 2026-08-24 — markdown — Rule 3 of [[Investment Entry Checklist]] changed to
   EMA12 > EMA21 with an EMA21-pullback entry and EMA cross-down exit, after

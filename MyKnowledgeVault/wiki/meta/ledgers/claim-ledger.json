@@ -1,94 +1,228 @@
 {
-  "claims": {
-    "clm-invest-rule-forward-pe": {
-      "assessment": "provisional",
-      "confidence": "medium",
-      "evidence": [
-        {
-          "relation": "supports",
-          "source_id": "src-4ffa3426aed0dd2c8033"
-        },
-        {
-          "relation": "supports",
-          "source_id": "src-b6196199963d600c1d97"
-        }
-      ],
-      "location": {
-        "anchor": null,
-        "path": "wiki/concepts/Price-Earnings Ratio.md"
-      },
-      "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
-      "reviewed_at": null,
-      "risk": "high",
-      "text": "The strategy buys only when Forward P/E <= TTM P/E, treating Forward > TTM as valuation-shock risk."
+ "claims": {
+  "clm-invest-rule-forward-pe": {
+   "assessment": "provisional",
+   "confidence": "medium",
+   "evidence": [
+    {
+     "relation": "supports",
+     "source_id": "src-4ffa3426aed0dd2c8033"
     },
-    "clm-invest-rule-institutions": {
-      "assessment": "provisional",
-      "confidence": "medium",
-      "evidence": [
-        {
-          "relation": "supports",
-          "source_id": "src-4ffa3426aed0dd2c8033"
-        },
-        {
-          "relation": "supports",
-          "source_id": "src-850485fc6f4b45ff1fc6"
-        }
-      ],
-      "location": {
-        "anchor": null,
-        "path": "wiki/concepts/Candle and Volume Confirmation.md"
-      },
-      "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
-      "reviewed_at": null,
-      "risk": "high",
-      "text": "The strategy defines institutional involvement as volume ratio above 1.5 with turnover above 1 percent near support, VWAP, or a key MA."
-    },
-    "clm-invest-rule-ma200-trend": {
-      "assessment": "provisional",
-      "confidence": "medium",
-      "evidence": [
-        {
-          "relation": "supports",
-          "source_id": "src-4ffa3426aed0dd2c8033"
-        },
-        {
-          "relation": "supports",
-          "source_id": "src-b42553cee724ae3c3d0c"
-        }
-      ],
-      "location": {
-        "anchor": null,
-        "path": "wiki/concepts/Moving Averages.md"
-      },
-      "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
-      "reviewed_at": null,
-      "risk": "high",
-      "text": "The strategy requires price above MA200, enters on MA10 or MA50 pullbacks, and exits short-term trades on a daily close below MA30."
-    },
-    "clm-invest-rule-vwap": {
-      "assessment": "provisional",
-      "confidence": "medium",
-      "evidence": [
-        {
-          "relation": "supports",
-          "source_id": "src-4ffa3426aed0dd2c8033"
-        },
-        {
-          "relation": "supports",
-          "source_id": "src-bbe5b5c400603c07de68"
-        }
-      ],
-      "location": {
-        "anchor": null,
-        "path": "wiki/concepts/VWAP.md"
-      },
-      "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
-      "reviewed_at": null,
-      "risk": "high",
-      "text": "The strategy treats VWAP as the day's fair-value line and buys only above or on reclaim of VWAP."
+    {
+     "relation": "supports",
+     "source_id": "src-b6196199963d600c1d97"
     }
+   ],
+   "location": {
+    "anchor": null,
+    "path": "wiki/concepts/Price-Earnings Ratio.md"
+   },
+   "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
+   "reviewed_at": null,
+   "risk": "high",
+   "text": "The strategy buys only when Forward P/E <= TTM P/E, treating Forward > TTM as valuation-shock risk."
   },
-  "generated_at": "2026-08-23T06:00:00Z",
-  "schema": "claude-obsidian.claim-ledger.v1"
+  "clm-invest-rule-institutions": {
+   "assessment": "provisional",
+   "confidence": "medium",
+   "evidence": [
+    {
+     "relation": "supports",
+     "source_id": "src-4ffa3426aed0dd2c8033"
+    },
+    {
+     "relation": "supports",
+     "source_id": "src-850485fc6f4b45ff1fc6"
+    }
+   ],
+   "location": {
+    "anchor": null,
+    "path": "wiki/concepts/Candle and Volume Confirmation.md"
+   },
+   "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
+   "reviewed_at": null,
+   "risk": "high",
+   "text": "The strategy defines institutional involvement as volume ratio above 1.5 with turnover above 1 percent near support, VWAP, or a key MA."
+  },
+  "clm-invest-rule-ma200-trend": {
+   "assessment": "provisional",
+   "confidence": "medium",
+   "evidence": [
+    {
+     "relation": "supports",
+     "source_id": "src-4ffa3426aed0dd2c8033"
+    },
+    {
+     "relation": "supports",
+     "source_id": "src-b42553cee724ae3c3d0c"
+    }
+   ],
+   "location": {
+    "anchor": null,
+    "path": "wiki/concepts/Moving Averages.md"
+   },
+   "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
+   "reviewed_at": null,
+   "risk": "high",
+   "text": "The strategy requires price above MA200, enters on MA10 or MA50 pullbacks, and exits short-term trades on a daily close below MA30."
+  },
+  "clm-invest-rule-vwap": {
+   "assessment": "provisional",
+   "confidence": "medium",
+   "evidence": [
+    {
+     "relation": "supports",
+     "source_id": "src-4ffa3426aed0dd2c8033"
+    },
+    {
+     "relation": "supports",
+     "source_id": "src-bbe5b5c400603c07de68"
+    }
+   ],
+   "location": {
+    "anchor": null,
+    "path": "wiki/concepts/VWAP.md"
+   },
+   "notes": "Author's own strategy statement; single primary source set (shared independence key), no independent corroboration of effectiveness.",
+   "reviewed_at": null,
+   "risk": "high",
+   "text": "The strategy treats VWAP as the day's fair-value line and buys only above or on reclaim of VWAP."
+  },
+  "clm-soulz-hl-hvn": {
+   "assessment": "provisional",
+   "confidence": "medium",
+   "evidence": [
+    {
+     "relation": "supports",
+     "source_id": "src-2a0180bd4ce83399c23d"
+    }
+   ],
+   "location": {
+    "anchor": null,
+    "path": "wiki/research/Options Income and Orderflow Research.md"
+   },
+   "notes": "Best of the four tested translations: 70-89 day holds, positive on 4 of 7 instruments, but only 1-11 trades each; retained as an optional filter, not a rule.",
+   "reviewed_at": "2026-08-25",
+   "risk": "high",
+   "text": "A higher low forming at a High Volume Node signals strong support (guide p.29)."
+  },
+  "clm-soulz-hvn-continuation": {
+   "assessment": "contested",
+   "confidence": "medium",
+   "evidence": [
+    {
+     "relation": "contradicts",
+     "source_id": "src-2a0180bd4ce83399c23d"
+    }
+   ],
+   "location": {
+    "anchor": null,
+    "path": "wiki/research/Options Income and Orderflow Research.md"
+   },
+   "notes": "Own daily-bar backtests (2016-2026, 7 instruments) found the translation positive but strictly worse than a plain EMA12/21 trend rule everywhere; daily proxies may understate the intraday claim.",
+   "reviewed_at": "2026-08-25",
+   "risk": "high",
+   "text": "A breakout above a High Volume Node with dominant buying pressure signals continuation (guide p.28)."
+  },
+  "clm-soulz-liquidation-magnets": {
+   "assessment": "unsupported",
+   "confidence": "low",
+   "evidence": [
+    {
+     "relation": "supports",
+     "source_id": "src-2a0180bd4ce83399c23d"
+    }
+   ],
+   "location": {
+    "anchor": null,
+    "path": "wiki/research/Options Income and Orderflow Research.md"
+   },
+   "notes": "No historical liquidation or order-book depth data available; untestable here.",
+   "reviewed_at": "2026-08-25",
+   "risk": "high",
+   "text": "Liquidation clusters act as price magnets that fuel squeezes and cascades (guide pp.18-20)."
+  },
+  "clm-soulz-no-independent-evidence": {
+   "assessment": "unsupported",
+   "confidence": "medium",
+   "evidence": [
+    {
+     "relation": "context",
+     "source_id": "src-fdab70efa35b3e9d0c74"
+    }
+   ],
+   "location": {
+    "anchor": null,
+    "path": "wiki/research/Options Income and Orderflow Research.md"
+   },
+   "notes": "Web round 2026-08-25 found only vendor/education material for volume-profile/POC methods; no peer-reviewed study located. Recorded as an absence-of-evidence observation, not proof of absence.",
+   "reviewed_at": "2026-08-25",
+   "risk": "normal",
+   "text": "No independent peer-reviewed evidence was found that volume-profile/POC trading methods are profitable."
+  },
+  "clm-tasty-payoff-formulas": {
+   "assessment": "accepted",
+   "confidence": "high",
+   "evidence": [
+    {
+     "relation": "supports",
+     "source_id": "src-4f44ce859b49fe84e27a"
+    }
+   ],
+   "location": {
+    "anchor": null,
+    "path": "wiki/research/Options Income and Orderflow Research.md"
+   },
+   "notes": "Independently verified 2026-08-25 against a live NVDA chain with the Vibe-Trading payoff analyzer (Black-Scholes, no dividends/assignment); exact agreement.",
+   "reviewed_at": "2026-08-25",
+   "risk": "normal",
+   "text": "The guide's max-profit/max-loss/breakeven formulas for short puts and iron condors are arithmetically correct."
+  },
+  "clm-tasty-performance": {
+   "assessment": "provisional",
+   "confidence": "medium",
+   "evidence": [
+    {
+     "relation": "supports",
+     "source_id": "src-aab41cc43a5495e6d106"
+    },
+    {
+     "relation": "contradicts",
+     "source_id": "src-fdab70efa35b3e9d0c74"
+    },
+    {
+     "relation": "context",
+     "source_id": "src-4f44ce859b49fe84e27a"
+    }
+   ],
+   "location": {
+    "anchor": null,
+    "path": "wiki/research/Options Income and Orderflow Research.md"
+   },
+   "notes": "Upgraded 2026-08-25: Bondarenko/Cboe 2019 shows 32-year index put-writing matched S&P return at ~2/3 volatility (single commissioned source; mechanics differ from the 45-DTE/50%-management recipe). One low-authority live trial of modified mechanics went negative despite a 70% win rate. Not accepted: no independent test of the exact doctrine.",
+   "reviewed_at": "2026-08-25",
+   "risk": "high",
+   "text": "Following the premium-selling doctrine produces superior long-run risk-adjusted returns."
+  },
+  "clm-tasty-premium-doctrine": {
+   "assessment": "accepted",
+   "confidence": "high",
+   "evidence": [
+    {
+     "relation": "supports",
+     "source_id": "src-4f44ce859b49fe84e27a"
+    }
+   ],
+   "location": {
+    "anchor": null,
+    "path": "wiki/research/Options Income and Orderflow Research.md"
+   },
+   "notes": "Accepted as a description of what the guide teaches (the source is authoritative about its own doctrine). Effectiveness is a separate, untested question.",
+   "reviewed_at": "2026-08-25",
+   "risk": "normal",
+   "text": "The tastylive approach sells option premium around 45 DTE in high IV, manages winners at 50% of max profit, and defends by rolling for credits."
+  }
+ },
+ "generated_at": "2026-08-23T06:00:00Z",
+ "schema": "claude-obsidian.claim-ledger.v1"
 }

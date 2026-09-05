@@ -4,9 +4,17 @@
     "wiki/concepts/Candle and Volume Confirmation.md": "c-000006",
     "wiki/concepts/Investment Entry Checklist.md": "c-000002",
     "wiki/concepts/Moving Averages.md": "c-000004",
+    "wiki/concepts/Options Premium Selling.md": "c-000012",
+    "wiki/concepts/Options Strategy Families.md": "c-000013",
+    "wiki/concepts/Order Book and Liquidations.md": "c-000015",
     "wiki/concepts/Price-Earnings Ratio.md": "c-000003",
     "wiki/concepts/VWAP.md": "c-000005",
-    "wiki/sources/Investment Guide Notes.md": "c-000001"
+    "wiki/concepts/Volume and Market Profile.md": "c-000014",
+    "wiki/research/Options Income and Orderflow Research.md": "c-000010",
+    "wiki/sources/Bondarenko Put-Writing Study.md": "c-000011",
+    "wiki/sources/CryptoSoulz Orderflow Guide.md": "c-000009",
+    "wiki/sources/Investment Guide Notes.md": "c-000001",
+    "wiki/sources/Tastylive Options Strategy Guide.md": "c-000008"
   },
   "description": "Ingest delta tracker. Source payloads are create-only.",
   "sources": {
@@ -24,6 +32,17 @@
       "name": "Investment guide - 5.pdf",
       "sha256": "1b363a25ff86bdfd285360210c90c5fa75681b6f700ed7f5e2afc82da41f34c8",
       "stored_path": ".raw/captured/1b363a25ff86bdfd285360210c90c5fa75681b6f700ed7f5e2afc82da41f34c8.pdf"
+    },
+    "1cb904928f823266fbfa14507df3d7ddac9304925d4d3ffb97634bc9830134d2": {
+      "generated_pages": [
+        "wiki/sources/Tastylive Options Strategy Guide.md",
+        "wiki/research/Options Income and Orderflow Research.md"
+      ],
+      "ingested_at": "2026-08-25",
+      "last_result": "ingested",
+      "name": "TT1469_strategy-guide_230627.pdf",
+      "sha256": "1cb904928f823266fbfa14507df3d7ddac9304925d4d3ffb97634bc9830134d2",
+      "stored_path": ".raw/captured/1cb904928f823266fbfa14507df3d7ddac9304925d4d3ffb97634bc9830134d2.pdf"
     },
     "480a42e942c3367096f2a76b55b081620fac35f605bc3cebe3be66276a686021": {
       "generated_pages": [
@@ -84,6 +103,28 @@
       "name": "Investment guide - 4.pdf",
       "sha256": "843da239807d15f61ce088e1085a88a9c528789336172af8d808383ac5dd5a0b",
       "stored_path": ".raw/captured/843da239807d15f61ce088e1085a88a9c528789336172af8d808383ac5dd5a0b.pdf"
+    },
+    "a2a02a35545890d6f9eaaecb0a967a0f951c8d8c895c6ed990ddb467743e92ee": {
+      "generated_pages": [
+        "wiki/sources/Bondarenko Put-Writing Study.md",
+        "wiki/research/Options Income and Orderflow Research.md"
+      ],
+      "ingested_at": "2026-08-25",
+      "last_result": "ingested",
+      "name": "PutWriteCBOE19_Bondarenko.pdf",
+      "sha256": "a2a02a35545890d6f9eaaecb0a967a0f951c8d8c895c6ed990ddb467743e92ee",
+      "stored_path": ".raw/captured/a2a02a35545890d6f9eaaecb0a967a0f951c8d8c895c6ed990ddb467743e92ee.pdf"
+    },
+    "e615ae69a927f70c9e19e3869e4ea5f13c908f9b0530af3f547d16f3aac10874": {
+      "generated_pages": [
+        "wiki/sources/CryptoSoulz Orderflow Guide.md",
+        "wiki/research/Options Income and Orderflow Research.md"
+      ],
+      "ingested_at": "2026-08-25",
+      "last_result": "ingested",
+      "name": "THE ORDERFLOW - CryptoSoulz (1).pdf",
+      "sha256": "e615ae69a927f70c9e19e3869e4ea5f13c908f9b0530af3f547d16f3aac10874",
+      "stored_path": ".raw/captured/e615ae69a927f70c9e19e3869e4ea5f13c908f9b0530af3f547d16f3aac10874.pdf"
     }
   },
   "version": 1

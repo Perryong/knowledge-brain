@@ -3,7 +3,7 @@ type: meta
 title: Hot Cache
 status: developing
 created: 2026-08-23
-updated: 2026-08-24
+updated: 2026-08-26
 tags:
   - meta
   - hot-cache
@@ -13,7 +13,7 @@ tags:
 
 ## Last Updated
 
-2026-08-24 — entry checklist rule 3 switched to EMA12/EMA21 after backtests.
+2026-08-26 — web evidence round: put-writing has 32-year index-level support; volume-profile claims still unsupported.
 
 ## Key Recent Facts
 
@@ -39,6 +39,18 @@ tags:
   (EPS -0.77, rule 2 unscorable), 28% above MA200 in the no-add zone, below
   MA10/MA50 and VWAP, VR 0.74. After-hours fell a further -10% past the
   scored session. Rule 1 awaits the holder's own business judgement.
+
+- New sources: [[Tastylive Options Strategy Guide]] (premium selling, 45 DTE,
+  manage at 50%; formulas verified against a live NVDA chain) and
+  [[CryptoSoulz Orderflow Guide]] (order-flow tools; daily-bar translations
+  did not beat EMA rule 3 — see [[Options Income and Orderflow Research]]).
+
+- Four new concept pages distill the two guides: premium selling, strategy
+  families, volume/market profile, order book & liquidations — each states
+  what is verified, provisional, contested, or unsupported.
+
+- [[Orderflow Strategy Backtest Grid]] preserves the full backtest numbers
+  behind the dossier's verdicts (nothing beat EMA12/EMA21 for swing holds).
 
 ## Recent Changes
 
