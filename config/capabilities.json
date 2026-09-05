@@ -285,11 +285,8 @@
         "path_requirements": [],
         "external_commands": []
       },
-      "verification_command": [
-        "python3",
-        "tests/test_trade_check.py"
-      ],
-      "verification_reason": ""
+      "verification_command": [],
+      "verification_reason": "the skill's offline scenario suite runs in the hermetic test suite as tests/test_trade_check.py; it is not duplicated as a capability probe because that probe shells out to a bare python3, which does not reliably resolve to the interpreter under test on every host"
     },
     {
       "id": "wiki",

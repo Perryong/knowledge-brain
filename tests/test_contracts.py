@@ -151,7 +151,6 @@ class CanonicalContractTests(unittest.TestCase):
             "tests/test_detect_transport.py",
             "tests/test_lint_engine.py",
             "tests/test_retrieve.py",
-            "tests/test_trade_check.py",
             "tests/test_vault_ops.py",
             "tests/test_wiki_mode.py",
         }
