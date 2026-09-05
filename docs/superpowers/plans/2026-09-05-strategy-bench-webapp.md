@@ -1040,7 +1040,11 @@ Call `run_scan_checks()` and `run_page_checks()` from `main()`.
 - [ ] **Step 5: Run self-check; verify pass**
 
 Run: `python3 webapp/selfcheck.py`
-Expected: exit 0. Also run the full local path once: `python3 webapp/scan.py` (online) and open `docs/index.html` in a browser — Today's signals matrix and Strategy rules render; historical panels show real backtest metrics; equity/trade panels show their empty-state text.
+Expected: exit 0 on the system interpreter (this is the dependency-light gate; it must keep passing with only pandas + numpy).
+
+Then run the full local path ONCE with an interpreter that has `yfinance` and `requests` installed — the system `python3` does not, and must not be modified: `<py-with-net> webapp/scan.py`. This is the only pre-CI exercise of the live fetch path, and it is what puts REAL market data into `docs/data.json` before the first commit. Open `docs/index.html` in a browser — Today's signals matrix and Strategy rules render; historical panels show real backtest metrics for the seven covered names; a signals-only ticker shows its empty-state text.
+
+Do not commit `docs/` while it holds self-check fixture output (all 60 tickers carrying identical synthetic bars). Verify before committing: `docs/data.json`'s `scan.as_of` is today and its candle dates are recent real trading days.
 
 - [ ] **Step 6: Commit**
 
