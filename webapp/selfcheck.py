@@ -101,6 +101,9 @@ def run_scan_checks():
     check("scan: state values", all(v["state"] in ("holding", "flat") for v in nv.values()))
     check("scan: action values", all(v["action"] in ("BUY", "SELL", "none") for v in nv.values()))
     check("scan: candles trimmed", len(result["candles"]["NVDA"]["d"]) <= 260)
+    check("scan: candles carry strategy-generated levels",
+          {"sh", "sl", "fvg"} <= set(result["candles"]["NVDA"]) and
+          any(x is not None for x in result["candles"]["NVDA"]["sh"]))
     partial = lambda entries, years=2: {e["name"]: df for e in entries[:10]}
     r2 = scan.scan_all(fetch=partial)
     check("scan: missing names marked stale", len(r2["stale"]) == len(universe) - 10)

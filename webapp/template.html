@@ -201,7 +201,6 @@ function tickersBar(){
     sel.innerHTML = `<option value="ALL">All sectors</option>` +
       Object.keys(groups).map(s => `<option value="${s}">${s}</option>`).join("");
 }
-function covered(t){ return (DATA.covered || []).includes(t); }
 function signalsPanel(){
   const s = DATA.scan;
   document.getElementById("asof").textContent =

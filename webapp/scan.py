@@ -116,7 +116,9 @@ def fetch_bars(entry, years=2):
 
 
 sys.path.insert(0, str(HERE))
-from strategies import REGISTRY, sig_state, triggers  # noqa: E402
+# _swings is private-by-convention: reused here (not reimplemented) so the price-chart
+# overlay's swing high/low always matches what g_smcstruct/g_ewabc actually trade on.
+from strategies import REGISTRY, sig_state, triggers, _swings  # noqa: E402
 
 CANDLE_BARS = 260
 TRIGGER_STRATS = ("ema", "smcstruct", "ewabc")
@@ -142,6 +144,20 @@ def scan_all(fetch=fetch_all):
             "l": [round(float(x), r) for x in tail["low"]],
             "c": [round(float(x), r) for x in tail["close"]],
         }
+        # strategy-generated levels for the price chart: the smcstruct/ewabc engines'
+        # own state (entry trigger = last confirmed swing high, exit = last swing low,
+        # bullish FVG = smcstruct's filter). _swings runs on the FULL history so pivots
+        # confirm exactly as the engine confirms them, then get sliced to the candle window.
+        cand = result["candles"][name]
+        sh, sl = _swings(df)
+        cand["sh"] = [None if pd.isna(x) else round(float(x), r) for x in sh.reindex(tail.index)]
+        cand["sl"] = [None if pd.isna(x) else round(float(x), r) for x in sl.reindex(tail.index)]
+        hi_a, lo_a = tail["high"].to_numpy(), tail["low"].to_numpy()
+        # same one-bar gap test as g_smcstruct's bull_fvg; rolling(20).max() there keeps a
+        # gap "live" for the 20 bars starting at the gap bar itself (verified: event at j
+        # stays live for i in [j, j+19]), so the zone spans [i, i+19].
+        cand["fvg"] = [[i, min(i + 19, len(tail) - 1), round(float(hi_a[i - 2]), r), round(float(lo_a[i]), r)]
+                       for i in range(2, len(tail)) if lo_a[i] > hi_a[i - 2]]
         for sname, spec in REGISTRY.items():
             sig = spec["generate"](df)
             state, action = sig_state(sig)
