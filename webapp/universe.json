@@ -1,0 +1,362 @@
+[
+ {
+  "name": "NVDA",
+  "source": "yfinance",
+  "code": "NVDA",
+  "sector": "Information Technology"
+ },
+ {
+  "name": "MSFT",
+  "source": "yfinance",
+  "code": "MSFT",
+  "sector": "Information Technology"
+ },
+ {
+  "name": "AAPL",
+  "source": "yfinance",
+  "code": "AAPL",
+  "sector": "Information Technology"
+ },
+ {
+  "name": "AVGO",
+  "source": "yfinance",
+  "code": "AVGO",
+  "sector": "Information Technology"
+ },
+ {
+  "name": "AMD",
+  "source": "yfinance",
+  "code": "AMD",
+  "sector": "Information Technology"
+ },
+ {
+  "name": "ARM",
+  "source": "yfinance",
+  "code": "ARM",
+  "sector": "Information Technology"
+ },
+ {
+  "name": "NBIS",
+  "source": "yfinance",
+  "code": "NBIS",
+  "sector": "Information Technology"
+ },
+ {
+  "name": "GOOGL",
+  "source": "yfinance",
+  "code": "GOOGL",
+  "sector": "Communication Services"
+ },
+ {
+  "name": "META",
+  "source": "yfinance",
+  "code": "META",
+  "sector": "Communication Services"
+ },
+ {
+  "name": "NFLX",
+  "source": "yfinance",
+  "code": "NFLX",
+  "sector": "Communication Services"
+ },
+ {
+  "name": "DIS",
+  "source": "yfinance",
+  "code": "DIS",
+  "sector": "Communication Services"
+ },
+ {
+  "name": "T",
+  "source": "yfinance",
+  "code": "T",
+  "sector": "Communication Services"
+ },
+ {
+  "name": "AMZN",
+  "source": "yfinance",
+  "code": "AMZN",
+  "sector": "Consumer Discretionary"
+ },
+ {
+  "name": "TSLA",
+  "source": "yfinance",
+  "code": "TSLA",
+  "sector": "Consumer Discretionary"
+ },
+ {
+  "name": "HD",
+  "source": "yfinance",
+  "code": "HD",
+  "sector": "Consumer Discretionary"
+ },
+ {
+  "name": "MCD",
+  "source": "yfinance",
+  "code": "MCD",
+  "sector": "Consumer Discretionary"
+ },
+ {
+  "name": "NKE",
+  "source": "yfinance",
+  "code": "NKE",
+  "sector": "Consumer Discretionary"
+ },
+ {
+  "name": "PG",
+  "source": "yfinance",
+  "code": "PG",
+  "sector": "Consumer Staples"
+ },
+ {
+  "name": "KO",
+  "source": "yfinance",
+  "code": "KO",
+  "sector": "Consumer Staples"
+ },
+ {
+  "name": "COST",
+  "source": "yfinance",
+  "code": "COST",
+  "sector": "Consumer Staples"
+ },
+ {
+  "name": "WMT",
+  "source": "yfinance",
+  "code": "WMT",
+  "sector": "Consumer Staples"
+ },
+ {
+  "name": "PEP",
+  "source": "yfinance",
+  "code": "PEP",
+  "sector": "Consumer Staples"
+ },
+ {
+  "name": "LLY",
+  "source": "yfinance",
+  "code": "LLY",
+  "sector": "Health Care"
+ },
+ {
+  "name": "UNH",
+  "source": "yfinance",
+  "code": "UNH",
+  "sector": "Health Care"
+ },
+ {
+  "name": "JNJ",
+  "source": "yfinance",
+  "code": "JNJ",
+  "sector": "Health Care"
+ },
+ {
+  "name": "ABBV",
+  "source": "yfinance",
+  "code": "ABBV",
+  "sector": "Health Care"
+ },
+ {
+  "name": "MRK",
+  "source": "yfinance",
+  "code": "MRK",
+  "sector": "Health Care"
+ },
+ {
+  "name": "BRK-B",
+  "source": "yfinance",
+  "code": "BRK-B",
+  "sector": "Financials"
+ },
+ {
+  "name": "JPM",
+  "source": "yfinance",
+  "code": "JPM",
+  "sector": "Financials"
+ },
+ {
+  "name": "V",
+  "source": "yfinance",
+  "code": "V",
+  "sector": "Financials"
+ },
+ {
+  "name": "MA",
+  "source": "yfinance",
+  "code": "MA",
+  "sector": "Financials"
+ },
+ {
+  "name": "BAC",
+  "source": "yfinance",
+  "code": "BAC",
+  "sector": "Financials"
+ },
+ {
+  "name": "CAT",
+  "source": "yfinance",
+  "code": "CAT",
+  "sector": "Industrials"
+ },
+ {
+  "name": "GE",
+  "source": "yfinance",
+  "code": "GE",
+  "sector": "Industrials"
+ },
+ {
+  "name": "UBER",
+  "source": "yfinance",
+  "code": "UBER",
+  "sector": "Industrials"
+ },
+ {
+  "name": "BA",
+  "source": "yfinance",
+  "code": "BA",
+  "sector": "Industrials"
+ },
+ {
+  "name": "HON",
+  "source": "yfinance",
+  "code": "HON",
+  "sector": "Industrials"
+ },
+ {
+  "name": "XOM",
+  "source": "yfinance",
+  "code": "XOM",
+  "sector": "Energy"
+ },
+ {
+  "name": "CVX",
+  "source": "yfinance",
+  "code": "CVX",
+  "sector": "Energy"
+ },
+ {
+  "name": "COP",
+  "source": "yfinance",
+  "code": "COP",
+  "sector": "Energy"
+ },
+ {
+  "name": "SLB",
+  "source": "yfinance",
+  "code": "SLB",
+  "sector": "Energy"
+ },
+ {
+  "name": "EOG",
+  "source": "yfinance",
+  "code": "EOG",
+  "sector": "Energy"
+ },
+ {
+  "name": "LIN",
+  "source": "yfinance",
+  "code": "LIN",
+  "sector": "Materials"
+ },
+ {
+  "name": "SHW",
+  "source": "yfinance",
+  "code": "SHW",
+  "sector": "Materials"
+ },
+ {
+  "name": "FCX",
+  "source": "yfinance",
+  "code": "FCX",
+  "sector": "Materials"
+ },
+ {
+  "name": "NEM",
+  "source": "yfinance",
+  "code": "NEM",
+  "sector": "Materials"
+ },
+ {
+  "name": "APD",
+  "source": "yfinance",
+  "code": "APD",
+  "sector": "Materials"
+ },
+ {
+  "name": "NEE",
+  "source": "yfinance",
+  "code": "NEE",
+  "sector": "Utilities"
+ },
+ {
+  "name": "SO",
+  "source": "yfinance",
+  "code": "SO",
+  "sector": "Utilities"
+ },
+ {
+  "name": "DUK",
+  "source": "yfinance",
+  "code": "DUK",
+  "sector": "Utilities"
+ },
+ {
+  "name": "CEG",
+  "source": "yfinance",
+  "code": "CEG",
+  "sector": "Utilities"
+ },
+ {
+  "name": "AEP",
+  "source": "yfinance",
+  "code": "AEP",
+  "sector": "Utilities"
+ },
+ {
+  "name": "PLD",
+  "source": "yfinance",
+  "code": "PLD",
+  "sector": "Real Estate"
+ },
+ {
+  "name": "AMT",
+  "source": "yfinance",
+  "code": "AMT",
+  "sector": "Real Estate"
+ },
+ {
+  "name": "EQIX",
+  "source": "yfinance",
+  "code": "EQIX",
+  "sector": "Real Estate"
+ },
+ {
+  "name": "SPG",
+  "source": "yfinance",
+  "code": "SPG",
+  "sector": "Real Estate"
+ },
+ {
+  "name": "O",
+  "source": "yfinance",
+  "code": "O",
+  "sector": "Real Estate"
+ },
+ {
+  "name": "XAUUSD",
+  "source": "yfinance",
+  "code": "GC=F",
+  "sector": "Macro"
+ },
+ {
+  "name": "BTCUSDT",
+  "source": "okx",
+  "code": "BTC-USDT",
+  "sector": "Macro"
+ },
+ {
+  "name": "VOO",
+  "source": "yfinance",
+  "code": "VOO",
+  "sector": "Macro"
+ }
+]

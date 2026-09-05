@@ -66,9 +66,31 @@ def run_registry_checks():
               REGISTRY["breakout"]["generate"](df).iloc[:300]))
 
 
+def run_fetch_checks():
+    import scan
+    wl = scan.load_universe()
+    check("universe: 60 entries", len(wl) == 60)
+    check("universe: fields", all({"name", "source", "code", "sector"} <= set(e) for e in wl))
+    check("universe: sources known", all(e["source"] in ("yfinance", "okx") for e in wl))
+    check("universe: unique names", len({e["name"] for e in wl}) == len(wl))
+    check("universe: 12 sector groups", len({e["sector"] for e in wl}) == 12)
+    check("universe: originals present",
+          {"NVDA", "XAUUSD", "BTCUSDT", "ARM", "NBIS", "VOO", "TSLA"} <= {e["name"] for e in wl})
+    batches = scan.batches([{"code": str(i)} for i in range(45)], 20)
+    check("batching: 45 -> 3 chunks", [len(b) for b in batches] == [20, 20, 5])
+    # normalizer is pure: OKX candle rows -> DataFrame (no network)
+    rows = [["1712016000000", "100", "110", "90", "105", "5", "500", "1", "1"],
+            ["1712102400000", "105", "112", "99", "108", "6", "600", "1", "1"]]
+    df = scan.okx_rows_to_df(rows)
+    check("okx normalizer: columns", list(df.columns) == ["open", "high", "low", "close", "volume"])
+    check("okx normalizer: ascending", df.index.is_monotonic_increasing)
+    check("okx normalizer: values", float(df["close"].iloc[-1]) == 108.0)
+
+
 def main():
     sys.path.insert(0, "webapp")
     run_registry_checks()
+    run_fetch_checks()
     print("\n%d failure(s)" % len(FAILURES))
     return 1 if FAILURES else 0
 
