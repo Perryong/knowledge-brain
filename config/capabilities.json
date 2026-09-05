@@ -250,6 +250,48 @@
       "verification_reason": "the thinking methodology is guidance and has no automated behavioral verifier"
     },
     {
+      "id": "trade-check",
+      "tier": "extension",
+      "implementation_paths": [
+        "skills/trade-check/SKILL.md",
+        "skills/trade-check/scripts/av_fetch.py",
+        "skills/trade-check/scripts/check_rules.py",
+        "skills/trade-check/scripts/bt_prepare.py",
+        "skills/trade-check/scripts/bt_report.py",
+        "skills/trade-check/scripts/selftest.py"
+      ],
+      "read_scope": [
+        "plugin:skills/**",
+        "vault:.vault-meta/**",
+        "vault:wiki/**"
+      ],
+      "write_scope": [
+        {
+          "pattern": "vault:wiki/**",
+          "access": "transactional"
+        }
+      ],
+      "needs": {
+        "shell": true,
+        "network": true
+      },
+      "transaction_type": "save",
+      "confirmation": {
+        "mutation": "operation_scope",
+        "network_egress": "explicit",
+        "destructive": "forbidden"
+      },
+      "configuration": {
+        "path_requirements": [],
+        "external_commands": []
+      },
+      "verification_command": [
+        "python3",
+        "tests/test_trade_check.py"
+      ],
+      "verification_reason": ""
+    },
+    {
       "id": "wiki",
       "tier": "core",
       "implementation_paths": [

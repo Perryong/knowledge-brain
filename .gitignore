@@ -48,8 +48,14 @@ credentials*
 secrets.y*ml
 auth.json
 
-# Personal files dropped into vault root by Obsidian (don't commit these)
+# Personal files dropped into vault root by Obsidian (don't commit these).
+# WIKI*.md has no leading slash so it matches at ANY depth, and this repo has
+# core.ignorecase=true (macOS), so it also matches agents/wiki-*.md. Both the
+# product's own WIKI.md and the wiki agents were silently never committed,
+# which broke CI on Linux/Windows. Re-include them explicitly.
 WIKI*.md
+!/WIKI.md
+!agents/*.md
 PROMPT.md
 Welcome.md
 *.tmp.*

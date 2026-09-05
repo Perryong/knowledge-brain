@@ -76,7 +76,7 @@ class CanonicalContractTests(unittest.TestCase):
         contracted = {item["id"] for item in document["capabilities"]}
         discovered = {path.parent.name for path in (ROOT / "skills").glob("*/SKILL.md")}
         self.assertEqual(discovered, contracted)
-        self.assertEqual(15, len(contracted))
+        self.assertEqual(16, len(contracted))
 
     def test_product_contract_locks_privacy_compatibility_and_release_authority(
         self,
@@ -151,6 +151,7 @@ class CanonicalContractTests(unittest.TestCase):
             "tests/test_detect_transport.py",
             "tests/test_lint_engine.py",
             "tests/test_retrieve.py",
+            "tests/test_trade_check.py",
             "tests/test_vault_ops.py",
             "tests/test_wiki_mode.py",
         }

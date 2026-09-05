@@ -352,10 +352,11 @@ def assert_not_plugin_tree(
         )
     if product_descendant:
         # knowledge-brain: this checkout also hosts the user's own vault as a
-        # subdirectory. A descendant that is itself an initialized vault (its
-        # own workspace config with role "vault") is a user vault, not product
-        # state; everything else in the product tree stays refused.
-        if _is_initialized_vault_dir(resolved):
+        # subdirectory. Admit ONLY the vault the product root's own workspace
+        # config names. The bundled templates/ and examples/ vaults carry their
+        # own role:"vault" configs, so "looks initialized" is not a sufficient
+        # test -- it would let init/adopt write into product examples.
+        if _is_declared_workspace_vault(plugin, resolved):
             return resolved
         raise VaultSelectionError(
             "PLUGIN_TREE_IS_NOT_VAULT",
@@ -364,19 +365,21 @@ def assert_not_plugin_tree(
     return resolved
 
 
-def _is_initialized_vault_dir(candidate: Path) -> bool:
-    """True when ``candidate`` carries its own vault-role workspace config."""
+def _is_declared_workspace_vault(plugin_root: Path, candidate: Path) -> bool:
+    """True when the product root's own workspace config names ``candidate``.
 
-    config = candidate / WORKSPACE_CONFIG
+    A product-tree descendant is a legitimate user vault only when the checkout
+    is itself a workspace pointing at it (the knowledge-brain arrangement).
+    Merely carrying a vault-role config is not enough: the bundled
+    templates/new-vault and examples/sample-vault ship one too, and writing
+    mutable state into them is exactly what this guard prevents.
+    """
+
     try:
-        _read_workspace_config(config)
+        declared = _read_workspace_config(plugin_root / WORKSPACE_CONFIG)
     except VaultSelectionError:
         return False
-    try:
-        data = _strict_json_loads(config.read_bytes().decode("utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError):
-        return False
-    return isinstance(data, dict) and data.get("role") == "vault"
+    return _portable_path_key(declared) == _portable_path_key(candidate)
 
 
 def resolve_vault_root(

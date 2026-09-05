@@ -56,7 +56,7 @@ replacement. Setup is non-destructive by default and creates no upstream Git
 remote.
 
 If the user asks for a domain-specific scaffold, establish the baseline first,
-then read [modes.md](modes.md). Draft the additional pages and
+then read [modes.md](references/modes.md). Draft the additional pages and
 configuration as one operation-level transaction. Never mutate vault files with
 host Write/Edit tools or an Obsidian transport.
 
@@ -80,7 +80,7 @@ because a session ended.
 
 ## Mutation contract
 
-Read [operation-transactions.md](operation-transactions.md) before
+Read [operation-transactions.md](references/operation-transactions.md) before
 any custom scaffold or mutation. One logical operation must produce one inspected
 and recoverable `claude-obsidian.transaction.v1` bundle. Parallel agents may
 return drafts and evidence only; the orchestrator merges them and applies once.
@@ -88,7 +88,7 @@ Every canonical page create or removal includes an active index or MOC update
 in that bundle; update the overview only when the stable high-level picture
 changed. Raw source payloads are create-only. There are no automatic commits.
 
-Use [provenance.md](provenance.md) when initializing or changing
+Use [provenance.md](references/provenance.md) when initializing or changing
 source and claim ledgers. Unsupported evidence stays unsupported; never invent a
 source, quote, date, locator, or confidence.
 
@@ -104,7 +104,7 @@ Reuse an operation ID only with the identical bundle.
 
 ## Installation context
 
-Read [install-modes.md](install-modes.md) when installation or host
+Read [install-modes.md](references/install-modes.md) when installation or host
 behavior matters. Hooks are optional adapters; portable behavior lives in the
 core and skills.
 
@@ -112,17 +112,17 @@ core and skills.
 
 Read only the reference needed for the current request:
 
-- [frontmatter.md](frontmatter.md) when defining or adopting a
+- [frontmatter.md](references/frontmatter.md) when defining or adopting a
   property schema;
-- [css-snippets.md](css-snippets.md) for requested Obsidian visual
+- [css-snippets.md](references/css-snippets.md) for requested Obsidian visual
   customization;
-- [git-setup.md](git-setup.md) for explicit local Git or checkpoint
+- [git-setup.md](references/git-setup.md) for explicit local Git or checkpoint
   setup;
-- [plugins.md](plugins.md) when evaluating optional Obsidian
+- [plugins.md](references/plugins.md) when evaluating optional Obsidian
   integrations;
-- [mcp-setup.md](mcp-setup.md) when the user asks to evaluate an
+- [mcp-setup.md](references/mcp-setup.md) when the user asks to evaluate an
   external read transport;
-- [rest-api.md](rest-api.md) only when the user explicitly has or
+- [rest-api.md](references/rest-api.md) only when the user explicitly has or
   requests the Local REST API adapter.
 
 ## Think, verify, grow
