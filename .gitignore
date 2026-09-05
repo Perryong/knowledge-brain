@@ -151,3 +151,13 @@ _attachments/
 # v1.8 methodology mode (host-specific by default; `git add -f` to commit if desired)
 .vault-meta/mode.json
 .vault-meta/mode.*.tmp
+
+# Copyrighted source captures: keep locally, never publish (repo is public).
+# The five original "Investment guide" PDFs predate this rule and are already
+# tracked; removing those needs a rewrite of PUSHED history plus a force-push.
+MyKnowledgeVault/.raw/captured/1cb904928f823266fbfa14507df3d7ddac9304925d4d3ffb97634bc9830134d2.pdf
+MyKnowledgeVault/.raw/captured/a2a02a35545890d6f9eaaecb0a967a0f951c8d8c895c6ed990ddb467743e92ee.pdf
+MyKnowledgeVault/.raw/captured/e615ae69a927f70c9e19e3869e4ea5f13c908f9b0530af3f547d16f3aac10874.pdf
+MyKnowledgeVault/inbox/PutWriteCBOE19_Bondarenko.pdf
+MyKnowledgeVault/inbox/THE ORDERFLOW - CryptoSoulz (1).pdf
+MyKnowledgeVault/inbox/TT1469_strategy-guide_230627.pdf
