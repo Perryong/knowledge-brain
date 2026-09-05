@@ -106,11 +106,31 @@ def run_scan_checks():
     check("scan: missing names marked stale", len(r2["stale"]) == len(universe) - 10)
     scan.write_outputs(result)
     payload = json.loads((scan.DOCS / "data.json").read_text())
-    check("payload: keys", set(payload) == {"scan", "backtests", "rules", "universe", "covered"})
+    check("payload: keys", set(payload) == {"scan", "backtests", "history", "rules", "universe", "covered"})
     check("payload: universe carries sectors", all({"name", "sector"} <= set(u) for u in payload["universe"]))
     check("payload: covered is the backtested subset",
           set(payload["covered"]) == set(payload["backtests"]) and len(payload["covered"]) == 7)
+    check("payload: history covers all 7 backtested tickers",
+          set(payload["history"]) == set(payload["covered"]))
+    check("payload: history curves non-empty for every covered ticker",
+          all(payload["history"][t]["curves"] for t in payload["covered"]))
     check("payload: size under 4MB", len(json.dumps(payload)) < 4_000_000)
+
+
+def run_page_checks():
+    import json
+    import scan, page
+    df = fixture()
+    result = scan.scan_all(fetch=lambda e, years=2: df)
+    scan.write_outputs(result)
+    out = page.build_page()
+    html = out.read_text()
+    check("page: payload injected", "__PAYLOAD__" not in html and '"signals"' in html)
+    check("page: signals panel present", 'id="sigmatrix"' in html)
+    check("page: rules panel present", 'id="rules"' in html)
+    check("page: rule text flows from registry", "A-B-C pullback" in html)
+    check("page: sector picker present", 'id="picker"' in html and "optgroup" in html)
+    check("page: sector filter present", 'id="sectorfilter"' in html)
 
 
 def main():
@@ -118,6 +138,7 @@ def main():
     run_registry_checks()
     run_fetch_checks()
     run_scan_checks()
+    run_page_checks()
     print("\n%d failure(s)" % len(FAILURES))
     return 1 if FAILURES else 0
 

@@ -155,9 +155,10 @@ def scan_all(fetch=fetch_all):
 def write_outputs(result):
     DOCS.mkdir(exist_ok=True)
     backtests = json.loads((HERE / "backtests.json").read_text())
+    history = json.loads((HERE / "history.json").read_text())
     rules = {n: {"buy": s["buy"], "sell": s["sell"], "gated": s["gated"]} for n, s in REGISTRY.items()}
     universe = [{"name": e["name"], "sector": e["sector"]} for e in load_universe()]
-    payload = {"scan": result, "backtests": backtests, "rules": rules,
+    payload = {"scan": result, "backtests": backtests, "history": history, "rules": rules,
                "universe": universe, "covered": sorted(backtests)}
     (DOCS / "data.json").write_text(json.dumps(payload, separators=(",", ":")))
     fresh = [f"{t}·{s} {v['action']}"
