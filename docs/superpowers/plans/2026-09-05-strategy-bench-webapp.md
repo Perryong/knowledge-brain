@@ -94,6 +94,16 @@ def run_registry_checks():
     check("profile cache: repeat call identical", a1.equals(a2))
     check("profile cache: different data not reused",
           not REGISTRY["value"]["generate"](fixture(seed=11)).equals(a1))
+    # a tail-only cache key silently returns another frame's profile: prove it cannot
+    from strategies import volume_profile
+    tail_a = fixture(seed=3)
+    tail_b = tail_a.copy()
+    for col in ("close", "high", "low"):
+        tail_b.iloc[50:150, tail_b.columns.get_loc(col)] *= 1.35
+    poc_a = volume_profile(tail_a["high"], tail_a["low"], tail_a["close"], tail_a["volume"])[0]
+    poc_b = volume_profile(tail_b["high"], tail_b["low"], tail_b["close"], tail_b["volume"])[0]
+    check("profile cache: identical tails with different history are distinct",
+          not poc_a.dropna().equals(poc_b.dropna()))
     check("breakout: no lookahead (truncated history equals prefix)",
           REGISTRY["breakout"]["generate"](df.iloc[:300]).equals(
               REGISTRY["breakout"]["generate"](df).iloc[:300]))
@@ -175,7 +185,8 @@ _PROFILE_CACHE = {}  # fingerprint -> result; keeps the scan from recomputing pe
 
 
 def volume_profile(h, l, c, v, nodes=False):
-    key = (len(c), str(c.index[-1]), float(c.iloc[-1]), float(v.iloc[-1]), nodes)
+    key = (len(c), str(c.index[-1]), float(c.iloc[-1]), float(v.iloc[-1]),
+           float(c.sum()), float(v.sum()), float(h.sum()), float(l.sum()), nodes)
     hit = _PROFILE_CACHE.get(key)
     if hit is not None:
         return hit
