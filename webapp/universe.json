@@ -42,6 +42,18 @@
   "sector": "Information Technology"
  },
  {
+  "name": "PLTR",
+  "source": "yfinance",
+  "code": "PLTR",
+  "sector": "Information Technology"
+ },
+ {
+  "name": "PANW",
+  "source": "yfinance",
+  "code": "PANW",
+  "sector": "Information Technology"
+ },
+ {
   "name": "GOOGL",
   "source": "yfinance",
   "code": "GOOGL",

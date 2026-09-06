@@ -75,7 +75,7 @@ def run_registry_checks():
 def run_fetch_checks():
     import scan
     wl = scan.load_universe()
-    check("universe: 60 entries", len(wl) == 60)
+    check("universe: 62 entries", len(wl) == 62)
     check("universe: fields", all({"name", "source", "code", "sector"} <= set(e) for e in wl))
     check("universe: sources known", all(e["source"] in ("yfinance", "okx") for e in wl))
     check("universe: unique names", len({e["name"] for e in wl}) == len(wl))
@@ -137,7 +137,7 @@ def run_scan_checks():
     check("payload: keys", set(payload) == {"scan", "backtests", "history", "rules", "universe", "covered"})
     check("payload: universe carries sectors", all({"name", "sector"} <= set(u) for u in payload["universe"]))
     check("payload: covered is the backtested subset",
-          set(payload["covered"]) == set(payload["backtests"]) and len(payload["covered"]) == 7)
+          set(payload["covered"]) == set(payload["backtests"]) and len(payload["covered"]) == 11)
     check("payload: history covers all 7 backtested tickers",
           set(payload["history"]) == set(payload["covered"]))
     check("payload: history curves non-empty for every covered ticker",
